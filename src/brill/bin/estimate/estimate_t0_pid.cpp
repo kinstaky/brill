@@ -1,3 +1,4 @@
+#include <cmath>
 #include <cstdio>
 #include <filesystem>
 #include <iostream>
@@ -38,8 +39,8 @@ bool InTrackWindow(
 	const brill::SquareDetectorConfig &detector
 ) {
 	return
-		std::fabs(right.x[right_index] - left.x[left_index]) <= detector.track_window_x
-		&& std::fabs(right.y[right_index] - left.y[left_index]) <= detector.track_window_y;
+		fabs(right.x[right_index] - left.x[left_index]) <= detector.track_window_x
+		&& fabs(right.y[right_index] - left.y[left_index]) <= detector.track_window_y;
 }
 
 void FillPairPid(

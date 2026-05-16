@@ -1,0 +1,77 @@
+workspace = "/data/disk1/delta"
+trigger = "t1"
+
+[paths]
+decode = "decode"
+forge = "forge"
+fuse = "fuse"
+normalize = "normalize"
+match = "match"
+track = "track"
+estimate = "estimate"
+
+[detectors.ppac]
+z_mm = [-52.0, -332.0, -612.0]
+x_offset_mm = [0.0, 0.0, 0.0]
+y_offset_mm = [0.0, 0.0, 0.0]
+x_scale = [1.0, 1.0, 1.0]
+y_scale = [1.0, 1.0, 1.0]
+
+[detectors.t0d1]
+front_strips = 32
+back_strips = 32
+thickness_um = 65.0
+size_x_mm = 64.0
+size_y_mm = 64.0
+center_x_mm = 0.0
+center_y_mm = 0.0
+z_mm = 100.0
+match_tolerance = 500.0
+
+[detectors.t0d2]
+front_strips = 64
+back_strips = 64
+thickness_um = 1000.0
+size_x_mm = 64.0
+size_y_mm = 64.0
+center_x_mm = 0.0
+center_y_mm = 0.0
+z_mm = 111.76
+match_tolerance = 200.0
+
+[detectors.t0d3]
+front_strips = 32
+back_strips = 32
+thickness_um = 1500.0
+size_x_mm = 64.0
+size_y_mm = 64.0
+center_x_mm = 0.0
+center_y_mm = 0.0
+z_mm = 123.52
+match_tolerance = 200.0
+
+[detectors.t0d4]
+front_strips = 32
+back_strips = 32
+thickness_um = 1500.0
+size_x_mm = 64.0
+size_y_mm = 64.0
+center_x_mm = 0.0
+center_y_mm = 0.0
+z_mm = 135.28
+match_tolerance = 100.0
+
+[detectors.t0s]
+front_strips = 1
+back_strips = 1
+thickness_um = 1500.0
+size_x_mm = 64.0
+size_y_mm = 64.0
+center_x_mm = 0.0
+center_y_mm = 0.0
+z_mm = 0.0
+
+[track]
+d2d1_window = [-2.0, 4.0]
+d3d2_window = [-4.0, 4.0]
+d4d3_window = [-5.0, 5.0]

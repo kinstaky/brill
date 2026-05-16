@@ -74,6 +74,20 @@ void FillOffsets(
 	}
 }
 
+void FillStripOffsets(
+	TH1F &hist_x,
+	TH1F &hist_y,
+	const brill::DssdMatchEvent &left,
+	const brill::DssdMatchEvent &right
+) {
+	for (int i = 0; i < left.num; ++i) {
+		for (int j = 0; j < right.num; ++j) {
+			hist_x.Fill(left.x[i] - right.x[j]);
+			hist_y.Fill(left.y[i] - right.y[j]);
+		}
+	}
+}
+
 void FitAndPrint(TH1F &histogram) {
 	TF1 fit((std::string("fit_") + histogram.GetName()).c_str(), "gaus", -5.0, 5.0);
 	fit.SetParameter(1, 0.0);
@@ -151,6 +165,7 @@ int main(int argc, char **argv) {
 	TChain chain3("tree");
 	TChain chain4("tree");
 	for (int current_run = run; current_run <= end_run; ++current_run) {
+		if (current_run == 112) continue;
 		chain1.Add(TString::Format(
 			"%s/t0d1_%s%04d.root",
 			match_dir.c_str(),
@@ -197,18 +212,30 @@ int main(int argc, char **argv) {
 		end_run
 	);
 	TFile opf(output_path, "recreate");
-	TH1F d2d1_x_offset("d2d1_x_offset", "D2 x - D1 x", 1000, -10.0, 10.0);
-	TH1F d2d1_y_offset("d2d1_y_offset", "D2 y - D1 y", 1000, -10.0, 10.0);
-	TH1F d3d1_x_offset("d3d1_x_offset", "D3 x - D1 x", 1000, -10.0, 10.0);
-	TH1F d3d1_y_offset("d3d1_y_offset", "D3 y - D1 y", 1000, -10.0, 10.0);
-	TH1F d4d1_x_offset("d4d1_x_offset", "D4 x - D1 x", 1000, -10.0, 10.0);
-	TH1F d4d1_y_offset("d4d1_y_offset", "D4 y - D1 y", 1000, -10.0, 10.0);
-	TH1F d3d2_x_offset("d3d2_x_offset", "D3 x - D2 x", 1000, -10.0, 10.0);
-	TH1F d3d2_y_offset("d3d2_y_offset", "D3 y - D2 y", 1000, -10.0, 10.0);
-	TH1F d4d2_x_offset("d4d2_x_offset", "D4 x - D2 x", 1000, -10.0, 10.0);
-	TH1F d4d2_y_offset("d4d2_y_offset", "D4 y - D2 y", 1000, -10.0, 10.0);
-	TH1F d4d3_x_offset("d4d3_x_offset", "D4 x - D3 x", 1000, -10.0, 10.0);
-	TH1F d4d3_y_offset("d4d3_y_offset", "D4 y - D3 y", 1000, -10.0, 10.0);
+	TH1F d2d1_x_offset("d2d1x", "D2 x - D1 x", 1000, -10.0, 10.0);
+	TH1F d2d1_y_offset("d2d1y", "D2 y - D1 y", 1000, -10.0, 10.0);
+	TH1F d3d1_x_offset("d3d1x", "D3 x - D1 x", 1000, -10.0, 10.0);
+	TH1F d3d1_y_offset("d3d1y", "D3 y - D1 y", 1000, -10.0, 10.0);
+	TH1F d4d1_x_offset("d4d1x", "D4 x - D1 x", 1000, -10.0, 10.0);
+	TH1F d4d1_y_offset("d4d1y", "D4 y - D1 y", 1000, -10.0, 10.0);
+	TH1F d3d2_x_offset("d3d2x", "D3 x - D2 x", 1000, -10.0, 10.0);
+	TH1F d3d2_y_offset("d3d2y", "D3 y - D2 y", 1000, -10.0, 10.0);
+	TH1F d4d2_x_offset("d4d2x", "D4 x - D2 x", 1000, -10.0, 10.0);
+	TH1F d4d2_y_offset("d4d2y", "D4 y - D2 y", 1000, -10.0, 10.0);
+	TH1F d4d3_x_offset("d4d3x", "D4 x - D3 x", 1000, -10.0, 10.0);
+	TH1F d4d3_y_offset("d4d3y", "D4 y - D3 y", 1000, -10.0, 10.0);
+	TH1F d2d1xs("d2d1xs", "D2 x - D1 x", 40, -10.0, 10.0);
+	TH1F d2d1ys("d2d1ys", "D2 y - D1 y", 40, -10.0, 10.0);
+	TH1F d3d1xs("d3d1xs", "D3 x - D1 x", 40, -10.0, 10.0);
+	TH1F d3d1ys("d3d1ys", "D3 y - D1 y", 40, -10.0, 10.0);
+	TH1F d4d1xs("d4d1xs", "D4 x - D1 x", 40, -10.0, 10.0);
+	TH1F d4d1ys("d4d1ys", "D4 y - D1 y", 40, -10.0, 10.0);
+	TH1F d3d2xs("d3d2xs", "D3 x - D2 x", 40, -10.0, 10.0);
+	TH1F d3d2ys("d3d2ys", "D3 y - D2 y", 40, -10.0, 10.0);
+	TH1F d4d2xs("d4d2xs", "D4 x - D2 x", 40, -10.0, 10.0);
+	TH1F d4d2ys("d4d2ys", "D4 y - D2 y", 40, -10.0, 10.0);
+	TH1F d4d3xs("d4d3xs", "D4 x - D3 x", 40, -10.0, 10.0);
+	TH1F d4d3ys("d4d3ys", "D4 y - D3 y", 40, -10.0, 10.0);
 
 	const double d1_pitch_x = AxisPitchX(*detector1);
 	const double d1_pitch_y = AxisPitchY(*detector1);
@@ -299,6 +326,12 @@ int main(int argc, char **argv) {
 			d4_pitch_y,
 			generator
 		);
+		FillStripOffsets(d2d1xs, d2d1ys, event1, event2);
+		FillStripOffsets(d3d1xs, d3d1ys, event1, event3);
+		FillStripOffsets(d4d1xs, d4d1ys, event1, event4);
+		FillStripOffsets(d3d2xs, d3d2ys, event2, event3);
+		FillStripOffsets(d4d2xs, d4d2ys, event2, event4);
+		FillStripOffsets(d4d3xs, d4d3ys, event3, event4);
 	}
 	std::printf("\b\b\b\b100%%\n");
 
@@ -328,6 +361,18 @@ int main(int argc, char **argv) {
 	d4d2_y_offset.Write();
 	d4d3_x_offset.Write();
 	d4d3_y_offset.Write();
+	d2d1xs.Write();
+	d2d1ys.Write();
+	d3d1xs.Write();
+	d3d1ys.Write();
+	d4d1xs.Write();
+	d4d1ys.Write();
+	d3d2xs.Write();
+	d3d2ys.Write();
+	d4d2xs.Write();
+	d4d2ys.Write();
+	d4d3xs.Write();
+	d4d3ys.Write();
 	opf.Close();
 
 	return 0;

@@ -171,7 +171,7 @@ void FillPhysicalPosition(
 			detector.center_y_mm,
 			detector.size_y_mm,
 			detector.front_strips,
-			front_strip
+			63-front_strip
 		);
 	} else {
 		x = StripPosition(
