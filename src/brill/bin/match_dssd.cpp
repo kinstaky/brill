@@ -29,7 +29,7 @@ void PrintUsage(const cxxopts::Options &options) {
 }
 
 std::string TriggerInfix(const std::string &trigger) {
-	return trigger.empty() ? "" : (trigger + "_");
+	return trigger == "main" ? "" : (trigger + "_");
 }
 
 } // namespace
@@ -126,8 +126,10 @@ int main(int argc, char **argv) {
 			std::cerr << "Error: Get tree from " << input_path << " failed.\n";
 			return 1;
 		}
+		brill::DssdEvent raw_event;
+		brill::DssdEvent normalized_event;
+		brill::SetupInput(ipt, raw_event);
 
-		std::filesystem::create_directories(JoinPath(config.workspace, config.paths.match));
 		TString output_path = TString::Format(
 			"%s/%s_%s%04d.root",
 			JoinPath(config.workspace, config.paths.match).c_str(),
@@ -140,15 +142,22 @@ int main(int argc, char **argv) {
 		brill::DssdMatchEvent match_event;
 		brill::SetupOutput(&opt, match_event);
 
-		brill::DssdEvent raw_event;
-		brill::DssdEvent normalized_event;
-		brill::SetupInput(ipt, raw_event);
-		for (long long entry = 0; entry < ipt->GetEntriesFast(); ++entry) {
+		long long total = ipt->GetEntries();
+		long long last_percentage = 0;
+		printf("Matching %s   0%%", detector_name.c_str());
+		fflush(stdout);
+		for (long long entry = 0; entry < total; ++entry) {
+			if (entry * 100ll / total > last_percentage) {
+				last_percentage = entry * 100ll / total;
+				printf("\b\b\b\b%3lld%%", last_percentage);
+				fflush(stdout);
+			}
 			ipt->GetEntry(entry);
 			brill::ApplyDssdNormalize(raw_event, parameters, normalized_event);
 			brill::MatchDssdEvent(normalized_event, working_detector, match_event);
 			opt.Fill();
 		}
+		printf("\b\b\b\b100%%\n");
 
 		opf.cd();
 		opt.Write();

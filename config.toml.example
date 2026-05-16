@@ -26,7 +26,7 @@ size_y_mm = 64.0
 center_x_mm = 0.0
 center_y_mm = 0.0
 z_mm = 100.0
-match_tolerance = 3000.0
+match_tolerance = 500.0
 track_window_x = 4.0
 track_window_y = 4.0
 
@@ -39,7 +39,7 @@ size_y_mm = 64.0
 center_x_mm = 0.0
 center_y_mm = 0.0
 z_mm = 111.76
-match_tolerance = 3000.0
+match_tolerance = 200.0
 track_window_x = 4.0
 track_window_y = 4.0
 
@@ -52,7 +52,7 @@ size_y_mm = 64.0
 center_x_mm = 0.0
 center_y_mm = 0.0
 z_mm = 123.52
-match_tolerance = 3000.0
+match_tolerance = 200.0
 track_window_x = 4.0
 track_window_y = 4.0
 
@@ -65,7 +65,7 @@ size_y_mm = 64.0
 center_x_mm = 0.0
 center_y_mm = 0.0
 z_mm = 135.28
-match_tolerance = 3000.0
+match_tolerance = 100.0
 track_window_x = 4.0
 track_window_y = 4.0
 
