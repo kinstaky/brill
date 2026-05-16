@@ -19,7 +19,7 @@ struct SquareDetectorConfig {
 	double center_x_mm = 0.0;
 	double center_y_mm = 0.0;
 	double z_mm = 0.0;
-	double merge_tolerance = 1000.0;
+	double match_tolerance = 1000.0;
 	double track_window_x = 4.0;
 	double track_window_y = 4.0;
 };

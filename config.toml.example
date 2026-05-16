@@ -1,31 +1,21 @@
 workspace = "."
+trigger = "t1"
 
-[analysis]
-trigger_default = "taf"
-
-[analysis.paths]
+[paths]
+decode = "decode"
 forge = "forge"
-normalize = "analysis/normalize"
-merge = "analysis/merge"
-track = "analysis/track"
-show = "analysis/show"
+fuse = "fuse"
+normalize = "normalize"
+match = "match"
+track = "track"
+estimate = "estimate"
 
 [detectors.ppac]
-z0_mm = -52.0
-z1_mm = -332.0
-z2_mm = -612.0
-x_offset0_mm = 0.0
-x_offset1_mm = 0.0
-x_offset2_mm = 0.0
-y_offset0_mm = 0.0
-y_offset1_mm = 0.0
-y_offset2_mm = 0.0
-x_scale0 = 1.0
-x_scale1 = 1.0
-x_scale2 = 1.0
-y_scale0 = 1.0
-y_scale1 = 1.0
-y_scale2 = 1.0
+z_mm = [-52.0, -332.0, -612.0]
+x_offset_mm = [0.0, 0.0, 0.0]
+y_offset_mm = [0.0, 0.0, 0.0]
+x_scale = [1.0, 1.0, 1.0]
+y_scale = [1.0, 1.0, 1.0]
 
 [detectors.t0d1]
 front_strips = 32
@@ -36,7 +26,7 @@ size_y_mm = 64.0
 center_x_mm = 0.0
 center_y_mm = 0.0
 z_mm = 100.0
-merge_tolerance = 3000.0
+match_tolerance = 3000.0
 track_window_x = 4.0
 track_window_y = 4.0
 
@@ -49,7 +39,7 @@ size_y_mm = 64.0
 center_x_mm = 0.0
 center_y_mm = 0.0
 z_mm = 111.76
-merge_tolerance = 3000.0
+match_tolerance = 3000.0
 track_window_x = 4.0
 track_window_y = 4.0
 
@@ -62,7 +52,7 @@ size_y_mm = 64.0
 center_x_mm = 0.0
 center_y_mm = 0.0
 z_mm = 123.52
-merge_tolerance = 3000.0
+match_tolerance = 3000.0
 track_window_x = 4.0
 track_window_y = 4.0
 
@@ -75,7 +65,7 @@ size_y_mm = 64.0
 center_x_mm = 0.0
 center_y_mm = 0.0
 z_mm = 135.28
-merge_tolerance = 3000.0
+match_tolerance = 3000.0
 track_window_x = 4.0
 track_window_y = 4.0
 

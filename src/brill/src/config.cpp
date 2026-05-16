@@ -92,8 +92,7 @@ void LoadDetector(const toml::table &table, const std::string &name, SquareDetec
 	LoadDetectorDouble(table, "center_x_mm", detector.center_x_mm);
 	LoadDetectorDouble(table, "center_y_mm", detector.center_y_mm);
 	LoadDetectorDouble(table, "z_mm", detector.z_mm);
-	LoadDetectorDouble(table, "merge_tolerance", detector.merge_tolerance);
-	LoadDetectorDouble(table, "match_tolerance", detector.merge_tolerance);
+	LoadDetectorDouble(table, "match_tolerance", detector.match_tolerance);
 	LoadDetectorDouble(table, "track_window_x", detector.track_window_x);
 	LoadDetectorDouble(table, "track_window_y", detector.track_window_y);
 }

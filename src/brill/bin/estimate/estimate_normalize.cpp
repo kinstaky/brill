@@ -156,7 +156,7 @@ int main(int argc, char **argv) {
 		brill::SetupInput(input_tree, raw_event);
 
 		TString output_path = TString::Format(
-			"%s/%s_%s%04d.root",
+			"%s/%s_normalize_%s%04d.root",
 			JoinPath(config.workspace, config.paths.estimate).c_str(),
 			detector_name.c_str(),
 			config.trigger == "main" ? "" : (config.trigger+"_").c_str(),
@@ -164,9 +164,10 @@ int main(int argc, char **argv) {
 		);
 		TFile output_file(output_path, "recreate");
 		TTree opt("tree", "normalized dssd");
+		brill::DssdEvent normalized_event;
+		SetupOutput(&opt, normalized_event);
 		TH1F hist("hde", "normalized front-back energy difference", 1000, -5000, 5000);
 
-		brill::DssdEvent normalized_event;
 		for (long long entry = 0; entry < input_tree->GetEntriesFast(); ++entry) {
 			input_tree->GetEntry(entry);
 			brill::ApplyDssdNormalize(raw_event, parameters, normalized_event);
@@ -176,11 +177,15 @@ int main(int argc, char **argv) {
 				i < normalized_event.front_num && i < normalized_event.back_num;
 				++i
 			) {
+				if (normalized_event.front_energy[i] == 0 || normalized_event.back_energy[i] == 0) continue;
 				hist.Fill(normalized_event.front_energy[i] - normalized_event.back_energy[i]);
 			}
+			opt.Fill();
 		}
 
+		output_file.cd();
 		hist.Write();
+		opt.Write();
 		output_file.Close();
 		input_file.Close();
 	}
