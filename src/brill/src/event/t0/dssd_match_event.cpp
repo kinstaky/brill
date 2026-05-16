@@ -30,4 +30,4 @@ void Reset(DssdMatchEvent &event) {
 	event.num = 0;
 }
 
-} // namespace glimmer
+} // namespace brill

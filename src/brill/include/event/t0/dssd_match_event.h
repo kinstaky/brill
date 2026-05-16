@@ -22,4 +22,4 @@ void SetupInput(TTree *tree, DssdMatchEvent &event, const std::string &prefix = 
 void SetupOutput(TTree *tree, DssdMatchEvent &event);
 void Reset(DssdMatchEvent &event);
 
-} // namespace glimmer
+} // namespace brill

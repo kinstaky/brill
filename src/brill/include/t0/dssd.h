@@ -4,6 +4,7 @@
 
 #include "include/config.h"
 #include "include/event/forge/dssd_event.h"
+#include "include/event/t0/dssd_match_event.h"
 
 namespace brill {
 
@@ -44,18 +45,11 @@ void ApplyDssdNormalize(
 	DssdEvent &output
 );
 
-// void MatchDssdEvent(
-// 	const DssdNormalizedEvent &input,
-// 	const SquareDetectorConfig &detector,
-// 	DssdMergeEvent &output
-// );
-
-// int RunDssdMerge(
-// 	const AppConfig &config,
-// 	const std::string &detector,
-// 	const std::string &trigger,
-// 	int run
-// );
+void MatchDssdEvent(
+	const DssdEvent &input,
+	const SquareDetectorConfig &detector,
+	DssdMatchEvent &output
+);
 
 // void FillDssdPidHistogram(const DssdMergeEvent &left, const DssdMergeEvent &right, TH2F &hist);
 
