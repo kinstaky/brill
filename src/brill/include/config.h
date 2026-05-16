@@ -20,8 +20,17 @@ struct SquareDetectorConfig {
 	double center_y_mm = 0.0;
 	double z_mm = 0.0;
 	double match_tolerance = 1000.0;
-	double track_window_x = 4.0;
-	double track_window_y = 4.0;
+};
+
+struct TrackWindowConfig {
+	double min = -4.0;
+	double max = 4.0;
+};
+
+struct TrackConfig {
+	TrackWindowConfig d2d1_window;
+	TrackWindowConfig d3d2_window;
+	TrackWindowConfig d4d3_window;
 };
 
 struct PpacConfig {
@@ -45,7 +54,9 @@ struct AppPaths {
 struct AppConfig {
 	std::string workspace = "/data/";
 	std::string trigger = "";
+	std::vector<int> jump_run;
 	AppPaths paths;
+	TrackConfig track;
 	PpacConfig ppac;
 	std::map<std::string, SquareDetectorConfig> detectors;
 };

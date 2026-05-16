@@ -44,6 +44,25 @@ void LoadPaths(const toml::table &table, AppPaths &paths) {
 	LoadPath(table, "estimate", paths.estimate);
 }
 
+void LoadTrackWindow(
+	const toml::table &table,
+	const char *key,
+	TrackWindowConfig &window
+) {
+	const auto *node = table[key].as_array();
+	if (!node || node->size() < 2) return;
+	auto min = (*node)[0].value<double>();
+	auto max = (*node)[1].value<double>();
+	if (min) window.min = *min;
+	if (max) window.max = *max;
+}
+
+void LoadTrack(const toml::table &table, TrackConfig &track) {
+	LoadTrackWindow(table, "d2d1_window", track.d2d1_window);
+	LoadTrackWindow(table, "d3d2_window", track.d3d2_window);
+	LoadTrackWindow(table, "d4d3_window", track.d4d3_window);
+}
+
 void LoadPpac(const toml::table &table, PpacConfig &ppac) {
 	if (const auto *node = table["z_mm"].as_array()) {
 		for (size_t i = 0; i < node->size() && i < kMaxPpac; ++i) {
@@ -93,14 +112,13 @@ void LoadDetector(const toml::table &table, const std::string &name, SquareDetec
 	LoadDetectorDouble(table, "center_y_mm", detector.center_y_mm);
 	LoadDetectorDouble(table, "z_mm", detector.z_mm);
 	LoadDetectorDouble(table, "match_tolerance", detector.match_tolerance);
-	LoadDetectorDouble(table, "track_window_x", detector.track_window_x);
-	LoadDetectorDouble(table, "track_window_y", detector.track_window_y);
 }
 
 } // namespace
 
 int LoadConfig(const std::string &path, AppConfig &config) {
 	try {
+		config = AppConfig();
 		toml::table table = toml::parse_file(path);
 		if (auto node = table["workspace"].value<std::string>()) {
 			config.workspace = *node;
@@ -111,9 +129,19 @@ int LoadConfig(const std::string &path, AppConfig &config) {
 		if (auto node = table["trigger"].value<std::string>()) {
 			config.trigger = *node;
 		}
+		if (const auto *jump_run = table["jump_run"].as_array()) {
+			for (size_t i = 0; i < jump_run->size(); ++i) {
+				if (auto value = (*jump_run)[i].value<int>()) {
+					config.jump_run.push_back(*value);
+				}
+			}
+		}
 
 		if (const auto *paths = table["paths"].as_table()) {
 			LoadPaths(*paths, config.paths);
+		}
+		if (const auto *track = table["track"].as_table()) {
+			LoadTrack(*track, config.track);
 		}
 
 		if (const auto *detectors = table["detectors"].as_table()) {

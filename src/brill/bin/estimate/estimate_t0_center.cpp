@@ -15,22 +15,12 @@
 #include "external/cxxopts.hpp"
 #include "include/config.h"
 #include "include/event/t0/dssd_match_event.h"
+#include "include/utils.h"
 
 namespace {
 
-std::string JoinPath(const std::string &left, const std::string &right) {
-	if (left.empty()) return right;
-	if (right.empty()) return left;
-	if (left.back() == '/') return left + right;
-	return left + "/" + right;
-}
-
 void PrintUsage(const cxxopts::Options &options) {
 	std::cout << options.help() << "\n";
-}
-
-std::string TriggerInfix(const std::string &trigger) {
-	return trigger == "main" ? "" : (trigger + "_");
 }
 
 double AxisPitchX(const brill::SquareDetectorConfig &detector) {
@@ -157,15 +147,17 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	const std::string match_dir = JoinPath(config.workspace, config.paths.match);
-	const std::string trigger_infix = TriggerInfix(config.trigger);
+	const std::string match_dir = brill::JoinPath(config.workspace, config.paths.match);
+	const std::string trigger_infix = brill::TriggerInfix(config.trigger);
 
 	TChain chain1("tree");
 	TChain chain2("tree");
 	TChain chain3("tree");
 	TChain chain4("tree");
+	int added_runs = 0;
 	for (int current_run = run; current_run <= end_run; ++current_run) {
-		if (current_run == 112) continue;
+		if (brill::IsJumpRun(config, current_run)) continue;
+		++added_runs;
 		chain1.Add(TString::Format(
 			"%s/t0d1_%s%04d.root",
 			match_dir.c_str(),
@@ -191,6 +183,10 @@ int main(int argc, char **argv) {
 			current_run
 		));
 	}
+	if (added_runs == 0) {
+		std::cout << "No runs to process after applying jump_run.\n";
+		return 0;
+	}
 	chain1.AddFriend(&chain2, "d2");
 	chain1.AddFriend(&chain3, "d3");
 	chain1.AddFriend(&chain4, "d4");
@@ -206,7 +202,7 @@ int main(int argc, char **argv) {
 
 	TString output_path = TString::Format(
 		"%s/t0_center_%s%04d_%04d.root",
-		JoinPath(config.workspace, config.paths.estimate).c_str(),
+		brill::JoinPath(config.workspace, config.paths.estimate).c_str(),
 		trigger_infix.c_str(),
 		run,
 		end_run

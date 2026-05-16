@@ -1,5 +1,6 @@
 workspace = "/data/disk1/delta"
 trigger = "t1"
+jump_run = [112]
 
 [paths]
 decode = "decode"

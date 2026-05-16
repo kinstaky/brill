@@ -13,22 +13,12 @@
 #include "include/config.h"
 #include "include/event/forge/silicon_event.h"
 #include "include/event/t0/dssd_match_event.h"
+#include "include/utils.h"
 
 namespace {
 
-std::string JoinPath(const std::string &left, const std::string &right) {
-	if (left.empty()) return right;
-	if (right.empty()) return left;
-	if (left.back() == '/') return left + right;
-	return left + "/" + right;
-}
-
 void PrintUsage(const cxxopts::Options &options) {
 	std::cout << options.help() << "\n";
-}
-
-std::string TriggerInfix(const std::string &trigger) {
-	return trigger == "main" ? "" : (trigger + "_");
 }
 
 bool InTrackWindow(
@@ -36,22 +26,26 @@ bool InTrackWindow(
 	int left_index,
 	const brill::DssdMatchEvent &right,
 	int right_index,
-	const brill::SquareDetectorConfig &detector
+	const brill::TrackWindowConfig &window
 ) {
+	double dx = right.x[right_index] - left.x[left_index];
+	double dy = right.y[right_index] - left.y[left_index];
 	return
-		fabs(right.x[right_index] - left.x[left_index]) <= detector.track_window_x
-		&& fabs(right.y[right_index] - left.y[left_index]) <= detector.track_window_y;
+		dx >= window.min
+		&& dx <= window.max
+		&& dy >= window.min
+		&& dy <= window.max;
 }
 
 void FillPairPid(
 	const brill::DssdMatchEvent &left,
 	const brill::DssdMatchEvent &right,
-	const brill::SquareDetectorConfig &detector,
+	const brill::TrackWindowConfig &window,
 	TH2F &histogram
 ) {
 	for (int i = 0; i < left.num; ++i) {
 		for (int j = 0; j < right.num; ++j) {
-			if (!InTrackWindow(left, i, right, j, detector)) continue;
+			if (!InTrackWindow(left, i, right, j, window)) continue;
 			histogram.Fill(right.energy[j], left.energy[i]);
 		}
 	}
@@ -110,24 +104,19 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	const brill::SquareDetectorConfig *detector2 = brill::FindDetectorConfig(config, "t0d2");
-	const brill::SquareDetectorConfig *detector3 = brill::FindDetectorConfig(config, "t0d3");
-	const brill::SquareDetectorConfig *detector4 = brill::FindDetectorConfig(config, "t0d4");
-	if (!detector2 || !detector3 || !detector4) {
-		std::cerr << "Error: Missing T0 detector config.\n";
-		return 1;
-	}
-
-	const std::string match_dir = JoinPath(config.workspace, config.paths.match);
-	const std::string forge_dir = JoinPath(config.workspace, config.paths.forge);
-	const std::string trigger_infix = TriggerInfix(config.trigger);
+	const std::string match_dir = brill::JoinPath(config.workspace, config.paths.match);
+	const std::string forge_dir = brill::JoinPath(config.workspace, config.paths.forge);
+	const std::string trigger_infix = brill::TriggerInfix(config.trigger);
 
 	TChain chain1("tree");
 	TChain chain2("tree");
 	TChain chain3("tree");
 	TChain chain4("tree");
 	TChain chain_s("tree");
+	int added_runs = 0;
 	for (int current_run = run; current_run <= end_run; ++current_run) {
+		if (brill::IsJumpRun(config, current_run)) continue;
+		++added_runs;
 		chain1.Add(TString::Format(
 			"%s/t0d1_%s%04d.root",
 			match_dir.c_str(),
@@ -159,6 +148,10 @@ int main(int argc, char **argv) {
 			current_run
 		));
 	}
+	if (added_runs == 0) {
+		std::cout << "No runs to process after applying jump_run.\n";
+		return 0;
+	}
 	chain1.AddFriend(&chain2, "d2");
 	chain1.AddFriend(&chain3, "d3");
 	chain1.AddFriend(&chain4, "d4");
@@ -177,7 +170,7 @@ int main(int argc, char **argv) {
 
 	TString output_path = TString::Format(
 		"%s/t0_pid_%s%04d-%04d.root",
-		JoinPath(config.workspace, config.paths.estimate).c_str(),
+		brill::JoinPath(config.workspace, config.paths.estimate).c_str(),
 		trigger_infix.c_str(),
 		run,
 		end_run
@@ -200,9 +193,9 @@ int main(int argc, char **argv) {
 			std::fflush(stdout);
 		}
 		chain1.GetEntry(entry);
-		FillPairPid(event1, event2, *detector2, d1d2_pid);
-		FillPairPid(event2, event3, *detector3, d2d3_pid);
-		FillPairPid(event3, event4, *detector4, d3d4_pid);
+		FillPairPid(event1, event2, config.track.d2d1_window, d1d2_pid);
+		FillPairPid(event2, event3, config.track.d3d2_window, d2d3_pid);
+		FillPairPid(event3, event4, config.track.d4d3_window, d3d4_pid);
 		FillSiliconPid(event4, event_s, d4t0s_pid);
 	}
 	std::printf("\b\b\b\b100%%\n");

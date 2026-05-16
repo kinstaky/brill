@@ -14,24 +14,13 @@
 #include "include/config.h"
 #include "include/event/forge/dssd_event.h"
 #include "include/event/t0/dssd_match_event.h"
-
-namespace {
-
-std::string JoinPath(const std::string &left, const std::string &right) {
-	if (left.empty()) return right;
-	if (right.empty()) return left;
-	if (left.back() == '/') return left + right;
-	return left + "/" + right;
-}
+#include "include/utils.h"
 
 void PrintUsage(const cxxopts::Options &options) {
 	std::cout << options.help() << "\n";
 }
 
-std::string TriggerInfix(const std::string &trigger) {
-	return trigger == "main" ? "" : (trigger + "_");
-}
-
+namespace {
 } // namespace
 
 int main(int argc, char **argv) {
@@ -88,6 +77,10 @@ int main(int argc, char **argv) {
 		config.trigger = result["trigger"].as<std::string>();
 	}
 	const int run = result["run"].as<int>();
+	if (brill::IsJumpRun(config, run)) {
+		std::cout << "Skipping jump run " << run << ".\n";
+		return 0;
+	}
 
 	for (const std::string &detector_name : detectors) {
 		const brill::SquareDetectorConfig *detector =
@@ -106,18 +99,18 @@ int main(int argc, char **argv) {
 		brill::DssdNormalizeParameters parameters;
 		parameters.front_strips = detector->front_strips;
 		parameters.back_strips = detector->back_strips;
-		std::string normalize_dir = JoinPath(config.workspace, config.paths.normalize);
-		std::string front_path = JoinPath(normalize_dir, detector_name + "_front.txt");
-		std::string back_path = JoinPath(normalize_dir, detector_name + "_back.txt");
+		std::string normalize_dir = brill::JoinPath(config.workspace, config.paths.normalize);
+		std::string front_path = brill::JoinPath(normalize_dir, detector_name + "_front.txt");
+		std::string back_path = brill::JoinPath(normalize_dir, detector_name + "_back.txt");
 		if (brill::ReadDssdNormalizeParameters(front_path, back_path, parameters)) {
 			return 1;
 		}
 
 		TString input_path = TString::Format(
 			"%s/%s_%s%04d.root",
-			JoinPath(config.workspace, config.paths.forge).c_str(),
+			brill::JoinPath(config.workspace, config.paths.forge).c_str(),
 			detector_name.c_str(),
-			TriggerInfix(config.trigger).c_str(),
+			brill::TriggerInfix(config.trigger).c_str(),
 			run
 		);
 		TFile ipf(input_path, "read");
@@ -132,9 +125,9 @@ int main(int argc, char **argv) {
 
 		TString output_path = TString::Format(
 			"%s/%s_%s%04d.root",
-			JoinPath(config.workspace, config.paths.match).c_str(),
+			brill::JoinPath(config.workspace, config.paths.match).c_str(),
 			detector_name.c_str(),
-			TriggerInfix(config.trigger).c_str(),
+			brill::TriggerInfix(config.trigger).c_str(),
 			run
 		);
 		TFile opf(output_path, "recreate");
