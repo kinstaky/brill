@@ -20,9 +20,6 @@ void PrintUsage(const cxxopts::Options &options) {
 	std::cout << options.help() << "\n";
 }
 
-namespace {
-} // namespace
-
 int main(int argc, char **argv) {
 	cxxopts::Options options("match_dssd", "Match normalized DSSD events.");
 	options.add_options()

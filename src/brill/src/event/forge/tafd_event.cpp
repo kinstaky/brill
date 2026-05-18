@@ -1,6 +1,6 @@
 #include "include/event/forge/tafd_event.h"
 
-namespace glimmer {
+namespace brill {
 
 void SetupInput(TTree *tree, TafdEvent &event, const std::string &prefix) {
 	tree->SetBranchAddress((prefix+"flag").c_str(), &event.flag);

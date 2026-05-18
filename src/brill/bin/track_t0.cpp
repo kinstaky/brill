@@ -163,17 +163,22 @@ int LoadTailCut(
 	const std::string &workspace,
 	const std::string &slice,
 	const std::string &particle,
+	std::set<std::string> &loaded,
 	std::unique_ptr<TCutG> &cut
 ) {
 	if (CutFileExists(workspace, slice, particle, true)) {
 		return brill::ParseCutFile(workspace, slice, particle, true, cut);
 	}
 	std::string element = ParticleElement(particle);
+	if (loaded.count(element) == 1) return 0;
+	if (ElementCharge(element) >= 6 && slice == "t0d3d4") return 0;
+	if (ElementCharge(element) >= 4 && slice == "t0d4s") return 0;
 	if (
 		!element.empty()
 		&& element != particle
 		&& CutFileExists(workspace, slice, element, true)
 	) {
+		loaded.insert(element);	
 		return brill::ParseCutFile(workspace, slice, element, true, cut);
 	}
 	std::cerr
@@ -238,7 +243,7 @@ void BuildTailDssdDssdSlices(
 
 void BuildStoppedDssdSiliconSlices(
 	const brill::DssdMatchEvent &dssd,
-	const glimmer::SiliconEvent &silicon,
+	const brill::SiliconEvent &silicon,
 	const brill::StraightSliceConfig &straight,
 	int layer,
 	std::vector<Slice> &slices
@@ -260,7 +265,7 @@ void BuildStoppedDssdSiliconSlices(
 
 void BuildTailDssdSiliconSlices(
 	const brill::DssdMatchEvent &dssd,
-	const glimmer::SiliconEvent &silicon,
+	const brill::SiliconEvent &silicon,
 	const std::vector<TailCutInfo> &cuts,
 	int layer,
 	std::vector<Slice> &slices
@@ -429,13 +434,14 @@ void BuildTailCuts(
 ) {
 	cuts.clear();
 	std::set<std::string> loaded;
+	std::set<std::string> loaded_tail;
 	for (const auto &particle : straight.particles) {
 		if (loaded.count(particle.particle) != 0) continue;
 		loaded.insert(particle.particle);
 		TailCutInfo cut_info;
 		cut_info.particle = particle.particle;
 		if (!ParseParticleName(cut_info.particle, cut_info.charge, cut_info.mass)) continue;
-		if (LoadTailCut(workspace, slice, cut_info.particle, cut_info.cut)) {
+		if (LoadTailCut(workspace, slice, cut_info.particle, loaded_tail, cut_info.cut)) {
 			throw std::runtime_error("load tail cut failed");
 		}
 		cuts.push_back(std::move(cut_info));
@@ -471,7 +477,7 @@ void FillParticle(
 	const brill::DssdMatchEvent &d2,
 	const brill::DssdMatchEvent &d3,
 	const brill::DssdMatchEvent &d4,
-	const glimmer::SiliconEvent &s,
+	const brill::SiliconEvent &s,
 	brill::T0Event &event
 ) {
 	if (event.num >= 8) return;
@@ -594,45 +600,56 @@ int main(int argc, char **argv) {
 	const std::string forge_dir = brill::JoinPath(config.workspace, config.paths.forge);
 	const std::string trigger_infix = brill::TriggerInfix(config.trigger);
 
-	TString d1_path = TString::Format(
+	TChain chain1("tree");
+	chain1.Add(TString::Format(
 		"%s/t0d1_%s%04d.root",
 		match_dir.c_str(),
 		trigger_infix.c_str(),
 		run
-	);
-	TFile ipf(d1_path, "read");
-	TTree *ipt = (TTree*)ipf.Get("tree");
-	if (!ipt) {
-		std::cerr << "Error: Get tree from " << d1_path << " failed.\n";
-		return 1;
-	}
-	ipt->AddFriend(
-		"d2=tree",
-		TString::Format("%s/t0d2_%s%04d.root", match_dir.c_str(), trigger_infix.c_str(), run)
-	);
-	ipt->AddFriend(
-		"d3=tree",
-		TString::Format("%s/t0d3_%s%04d.root", match_dir.c_str(), trigger_infix.c_str(), run)
-	);
-	ipt->AddFriend(
-		"d4=tree",
-		TString::Format("%s/t0d4_%s%04d.root", match_dir.c_str(), trigger_infix.c_str(), run)
-	);
-	ipt->AddFriend(
-		"s=tree",
-		TString::Format("%s/t0s_%s%04d.root", forge_dir.c_str(), trigger_infix.c_str(), run)
-	);
+	));
+	TChain chain2("tree");
+	chain2.Add(TString::Format(
+		"%s/t0d2_%s%04d.root",
+		match_dir.c_str(),
+		trigger_infix.c_str(),
+		run
+	));
+	TChain chain3("tree");
+	chain3.Add(TString::Format(
+		"%s/t0d3_%s%04d.root",
+		match_dir.c_str(),
+		trigger_infix.c_str(),
+		run
+	));
+	TChain chain4("tree");
+	chain4.Add(TString::Format(
+		"%s/t0d4_%s%04d.root",
+		match_dir.c_str(),
+		trigger_infix.c_str(),
+		run
+	));
+	TChain chain_s("tree");
+	chain_s.Add(TString::Format(
+		"%s/t0s_%s%04d.root",
+		forge_dir.c_str(),
+		trigger_infix.c_str(),
+		run
+	));
+	chain1.AddFriend(&chain2, "d2");
+	chain1.AddFriend(&chain3, "d3");
+	chain1.AddFriend(&chain4, "d4");
+	chain1.AddFriend(&chain_s, "s");
 
 	brill::DssdMatchEvent d1_event;
 	brill::DssdMatchEvent d2_event;
 	brill::DssdMatchEvent d3_event;
 	brill::DssdMatchEvent d4_event;
-	glimmer::SiliconEvent s_event;
-	brill::SetupInput(ipt, d1_event);
-	brill::SetupInput(ipt, d2_event, "d2.");
-	brill::SetupInput(ipt, d3_event, "d3.");
-	brill::SetupInput(ipt, d4_event, "d4.");
-	glimmer::SetupInput(ipt, s_event, "s.");
+	brill::SiliconEvent s_event;
+	brill::SetupInput(&chain1, d1_event);
+	brill::SetupInput(&chain1, d2_event, "d2.");
+	brill::SetupInput(&chain1, d3_event, "d3.");
+	brill::SetupInput(&chain1, d4_event, "d4.");
+	brill::SetupInput(&chain1, s_event, "s.");
 
 	TString output_path = TString::Format(
 		"%s/t0_%s%04d.root",
@@ -646,7 +663,7 @@ int main(int argc, char **argv) {
 	brill::Reset(output_event);
 	brill::SetupOutput(&opt, output_event);
 
-	const long long total = ipt->GetEntries();
+	const long long total = chain1.GetEntries();
 	long long last_percentage = -1;
 	std::printf("Tracking T0   0%%");
 	std::fflush(stdout);
@@ -657,7 +674,7 @@ int main(int argc, char **argv) {
 			std::printf("\b\b\b\b%3lld%%", percentage);
 			std::fflush(stdout);
 		}
-		ipt->GetEntry(entry);
+		chain1.GetEntry(entry);
 		brill::Reset(output_event);
 
 		std::vector<Slice> slices[3];
@@ -834,6 +851,5 @@ int main(int argc, char **argv) {
 	opf.cd();
 	opt.Write();
 	opf.Close();
-	ipf.Close();
 	return 0;
 }

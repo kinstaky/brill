@@ -5,7 +5,7 @@
 
 #include <TTree.h>
 
-namespace glimmer {
+namespace brill {
 
 struct CsiEvent {
 	unsigned long long flag;

@@ -1,6 +1,6 @@
 #include "include/event/forge/silicon_event.h"
 
-namespace glimmer {
+namespace brill {
 
 void SetupInput(TTree *tree, SiliconEvent &event, const std::string &prefix) {
 	tree->SetBranchAddress((prefix+"valid").c_str(), &event.valid);

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include <TChain.h>
-#include <TMinuit.h>
+#include <TGraph.h>
 #include <TString.h>
 
 #include "external/cxxopts.hpp"

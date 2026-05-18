@@ -135,7 +135,7 @@ mean = 29355
 sigma = 320
 range = 1.0
 [[identify.straight.t0d2d3.particles]]
-particle = "12C"
+particle = "11C"
 mean = 30650
 sigma = 211
 range = 2.0
@@ -224,11 +224,11 @@ range = 2.0
 [identify.straight.t0d4s]
 A = 0.9458
 B = -0.0429
-[[identify.straight.t0d4s.particles]]
-particle = "3He"
-mean = 8355
-sigma = 350
-range = 0.5
+#[[identify.straight.t0d4s.particles]]
+#particle = "3He"
+#mean = 8355
+#sigma = 350
+#range = 0.5
 [[identify.straight.t0d4s.particles]]
 particle = "4He"
 mean = 9444

@@ -4,7 +4,7 @@
 #include <TTree.h>
 #include <string>
 
-namespace glimmer {
+namespace brill {
 
 struct AlignEvent {
 	// entry after forged

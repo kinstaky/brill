@@ -53,7 +53,7 @@ void FillPairPid(
 
 void FillSiliconPid(
 	const brill::DssdMatchEvent &dssd,
-	const glimmer::SiliconEvent &silicon,
+	const brill::SiliconEvent &silicon,
 	TH2F &histogram
 ) {
 	if (!silicon.valid) return;
@@ -161,12 +161,12 @@ int main(int argc, char **argv) {
 	brill::DssdMatchEvent event2;
 	brill::DssdMatchEvent event3;
 	brill::DssdMatchEvent event4;
-	glimmer::SiliconEvent event_s;
+	brill::SiliconEvent event_s;
 	brill::SetupInput(&chain1, event1);
 	brill::SetupInput(&chain1, event2, "d2.");
 	brill::SetupInput(&chain1, event3, "d3.");
 	brill::SetupInput(&chain1, event4, "d4.");
-	glimmer::SetupInput(&chain1, event_s, "s.");
+	brill::SetupInput(&chain1, event_s, "s.");
 
 	TString output_path = TString::Format(
 		"%s/t0_pid_%s%04d_%04d.root",

@@ -4,7 +4,7 @@
 #include <string>
 #include <TTree.h>
 
-namespace glimmer {
+namespace brill {
 
 struct VmeEvent {
 	long long vme_entry;

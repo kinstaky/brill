@@ -1,6 +1,6 @@
 #include "include/event/forge/csi_event.h"
 
-namespace glimmer {
+namespace brill {
 
 void SetupInput(TTree *tree, CsiEvent &event, const std::string &prefix) {
 	tree->SetBranchAddress((prefix+"flag").c_str(), &event.flag);

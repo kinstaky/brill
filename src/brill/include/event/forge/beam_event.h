@@ -4,7 +4,7 @@
 
 #include <TTree.h>
 
-namespace glimmer {
+namespace brill {
 
 struct BeamEvent {
 	int flag;

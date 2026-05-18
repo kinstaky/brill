@@ -1,6 +1,6 @@
 #include "include/event/forge/vme_event.h"
 
-namespace glimmer {
+namespace brill {
 
 void SetupInput(TTree *tree, VmeEvent &event, const std::string &prefix) {
 	tree->SetBranchAddress((prefix+"vme_entry").c_str(), &event.vme_entry);

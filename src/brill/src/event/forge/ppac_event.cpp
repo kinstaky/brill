@@ -1,6 +1,6 @@
 #include "include/event/forge/ppac_event.h"
 
-namespace glimmer {
+namespace brill {
 
 void SetupInput(TTree *tree, PpacEvent &event, const std::string &prefix) {
 	tree->SetBranchAddress((prefix+"flag").c_str(), &event.flag);

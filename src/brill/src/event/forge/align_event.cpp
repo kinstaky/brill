@@ -1,6 +1,6 @@
 #include "include/event/forge/align_event.h"
 
-namespace glimmer {
+namespace brill {
 
 void SetupInput(TTree *tree, AlignEvent &event, const std::string &prefix) {
 	tree->SetBranchAddress((prefix+"vme_entry").c_str(), &event.vme_entry);
