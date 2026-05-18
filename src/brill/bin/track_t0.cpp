@@ -15,7 +15,7 @@
 
 #include "external/cxxopts.hpp"
 #include "include/config.h"
-#include "include/event/forge/silicon_event.h"
+#include "include/event/ingot/silicon_event.h"
 #include "include/event/t0/dssd_match_event.h"
 #include "include/event/t0/t0_event.h"
 #include "include/utils.h"
@@ -597,7 +597,7 @@ int main(int argc, char **argv) {
 	}
 
 	const std::string match_dir = brill::JoinPath(config.workspace, config.paths.match);
-	const std::string forge_dir = brill::JoinPath(config.workspace, config.paths.forge);
+	const std::string ingot_dir = brill::JoinPath(config.workspace, config.paths.ingot);
 	const std::string trigger_infix = brill::TriggerInfix(config.trigger);
 
 	TChain chain1("tree");
@@ -631,7 +631,7 @@ int main(int argc, char **argv) {
 	TChain chain_s("tree");
 	chain_s.Add(TString::Format(
 		"%s/t0s_%s%04d.root",
-		forge_dir.c_str(),
+		ingot_dir.c_str(),
 		trigger_infix.c_str(),
 		run
 	));

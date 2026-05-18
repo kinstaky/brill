@@ -1,4 +1,4 @@
-#include "include/event/forge/vme_event.h"
+#include "include/event/ingot/vme_event.h"
 
 namespace brill {
 

@@ -1,4 +1,4 @@
-#include "include/event/forge/beam_event.h"
+#include "include/event/ingot/beam_event.h"
 
 namespace brill {
 

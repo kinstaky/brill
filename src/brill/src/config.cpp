@@ -35,9 +35,9 @@ void LoadDetectorInt(
 }
 
 void LoadPaths(const toml::table &table, AppPaths &paths) {
-	LoadPath(table, "decode", paths.decode);
-	LoadPath(table, "forge", paths.forge);
-	LoadPath(table, "fuse", paths.fuse);
+	LoadPath(table, "ore", paths.ore);
+	LoadPath(table, "grit", paths.grit);
+	LoadPath(table, "ingot", paths.ingot);
 	LoadPath(table, "normalize", paths.normalize);
 	LoadPath(table, "match", paths.match);
 	LoadPath(table, "track", paths.track);

@@ -12,7 +12,7 @@
 
 #include "external/cxxopts.hpp"
 #include "include/config.h"
-#include "include/event/forge/dssd_event.h"
+#include "include/event/ingot/dssd_event.h"
 #include "include/t0/dssd.h"
 #include "include/utils.h"
 
@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
 
 		TString input_path = TString::Format(
 			"%s/%s_%s%04d.root",
-			brill::JoinPath(config.workspace, config.paths.forge).c_str(),
+			brill::JoinPath(config.workspace, config.paths.ingot).c_str(),
 			detector_name.c_str(),
 			brill::TriggerInfix(config.trigger).c_str(),
 			run

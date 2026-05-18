@@ -3,7 +3,7 @@
 #include <string>
 
 #include "include/config.h"
-#include "include/event/forge/dssd_event.h"
+#include "include/event/ingot/dssd_event.h"
 #include "include/event/t0/dssd_match_event.h"
 
 namespace brill {

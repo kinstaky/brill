@@ -1,2 +1,2 @@
-add_subdirectory(forge)
+add_subdirectory(ingot)
 add_subdirectory(t0)

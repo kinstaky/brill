@@ -59,9 +59,9 @@ struct PpacConfig {
 };
 
 struct AppPaths {
-	std::string decode = "decode";
-	std::string forge = "forge";
-	std::string fuse = "fuse";
+	std::string ore = "ore";
+	std::string grit = "grit";
+	std::string ingot = "ingot";
 	std::string normalize = "normalize";
 	std::string match = "match";
 	std::string track = "track";
