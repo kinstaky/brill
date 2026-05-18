@@ -247,12 +247,12 @@ int main(int argc, char **argv) {
 					event.layer[i] == info.layer+2
 					&& event.charge[i] == info.charge
 					&& event.mass[i] == info.mass
-					&& event.energy[i][0] > info.left
-					&& event.energy[i][0] < info.right
+					&& event.energy[i][info.layer] > info.left
+					&& event.energy[i][info.layer] < info.right
 				) {
 					gcali.AddPoint(
-						event.energy[i][0] + info.offset,
-						event.energy[i][1]
+						event.energy[i][info.layer] + info.offset,
+						event.energy[i][info.layer+1]
 					);
 					break;
 				}
