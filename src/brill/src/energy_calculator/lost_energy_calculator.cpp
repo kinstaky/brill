@@ -35,7 +35,9 @@ double LostEnergyCalculator::IncidentEnergy(double residual_energy) const {
 }
 
 double LostEnergyCalculator::EnergyLossFromResidual(double residual_energy) const {
-	if (residual_energy <= 0.0) return 0.0;
+	if (residual_energy <= 0.0) {
+		return std::max(0.0, IncidentEnergy(0.0));
+	}
 	return std::max(0.0, IncidentEnergy(residual_energy) - residual_energy);
 }
 

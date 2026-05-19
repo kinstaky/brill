@@ -1,0 +1,19 @@
+add_library(
+	rebuild_physics
+	nuclear_data.cpp
+	particle.cpp
+)
+target_include_directories(
+	rebuild_physics
+	PUBLIC
+	${PROJECT_SOURCE_DIR}
+	${ROOT_INCLUDE_DIRS}
+)
+target_link_libraries(
+	rebuild_physics
+	PUBLIC
+	${BRILL_CATIMA_TARGET}
+	ROOT::Core
+	ROOT::GenVector
+	ROOT::MathCore
+)

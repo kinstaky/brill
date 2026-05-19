@@ -16,6 +16,16 @@ target_link_libraries(
 	ROOT::Graf
 )
 
+add_executable(rebuild_t0 rebuild_t0.cpp)
+target_link_libraries(
+	rebuild_t0
+	PRIVATE
+	estimate_support
+	t0_event
+	particle_event
+	energy_calculator
+)
+
 add_executable(calibrate_t0 calibrate_t0.cpp)
 target_link_libraries(
 	calibrate_t0
@@ -27,3 +37,4 @@ target_link_libraries(
 )
 
 add_subdirectory(estimate)
+add_subdirectory(rebuild)

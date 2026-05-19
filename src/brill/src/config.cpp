@@ -41,7 +41,9 @@ void LoadPaths(const toml::table &table, AppPaths &paths) {
 	LoadPath(table, "normalize", paths.normalize);
 	LoadPath(table, "match", paths.match);
 	LoadPath(table, "track", paths.track);
+	LoadPath(table, "particle", paths.particle);
 	LoadPath(table, "estimate", paths.estimate);
+	LoadPath(table, "spectrum", paths.spectrum);
 	LoadPath(table, "calibration", paths.calibration);
 	LoadPath(table, "energy_calculator", paths.energy_calculator);
 }
@@ -186,6 +188,9 @@ int LoadConfig(const std::string &path, AppConfig &config) {
 		}
 		if (auto node = table["trigger"].value<std::string>()) {
 			config.trigger = *node;
+		}
+		if (auto node = table["assets"].value<std::string>()) {
+			config.assets = *node;
 		}
 		if (const auto *jump_run = table["jump_run"].as_array()) {
 			for (size_t i = 0; i < jump_run->size(); ++i) {

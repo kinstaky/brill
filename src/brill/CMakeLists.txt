@@ -46,7 +46,7 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 endif()
 
 # find root
-find_package(ROOT 6.20 CONFIG REQUIRED COMPONENTS Core RIO Tree Hist Graf Minuit)
+find_package(ROOT 6.20 CONFIG REQUIRED COMPONENTS Core RIO Tree Hist Graf Minuit GenVector MathCore)
 
 # find catima
 find_package(catima CONFIG QUIET)

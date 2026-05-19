@@ -70,7 +70,9 @@ struct AppPaths {
 	std::string normalize = "normalize";
 	std::string match = "match";
 	std::string track = "track";
+	std::string particle = "particle";
 	std::string estimate = "estimate";
+	std::string spectrum = "spectrum";
 	std::string calibration = "calibration";
 	std::string energy_calculator = "energy_calculator";
 };
@@ -78,6 +80,7 @@ struct AppPaths {
 struct AppConfig {
 	std::string workspace = "/data/";
 	std::string trigger = "";
+	std::string assets = "assets";
 	std::vector<int> jump_run;
 	AppPaths paths;
 	T0Config t0;

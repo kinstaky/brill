@@ -1,5 +1,6 @@
 add_subdirectory(event)
 add_subdirectory(energy_calculator)
+add_subdirectory(rebuild)
 add_subdirectory(t0)
 
 add_library(

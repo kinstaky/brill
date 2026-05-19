@@ -353,12 +353,6 @@ void BuildChains(const std::vector<Slice> *slices, std::vector<Chain> &chains) {
 	for (size_t i = 0; i < slices[0].size(); ++i) {
 		BuildChainsFromSlice(slices, 0, int(i), empty, chains);
 	}
-	for (size_t i = 0; i < slices[1].size(); ++i) {
-		BuildChainsFromSlice(slices, 1, int(i), empty, chains);
-	}
-	for (size_t i = 0; i < slices[2].size(); ++i) {
-		BuildChainsFromSlice(slices, 2, int(i), empty, chains);
-	}
 }
 
 void SelectBestSubset(

@@ -1,6 +1,7 @@
 workspace = "/data/disk1/delta"
 trigger = "t1"
 jump_run = [112]
+assets = "assets"
 
 [paths]
 ore = "ore"
@@ -8,7 +9,9 @@ grit = "grit"
 ingot = "ingot"
 normalize = "normalize"
 match = "match"
-track = "track"
+telescope = "track"
+particle = "particle"
+spectrum = "spectrum"
 estimate = "estimate"
 
 [t0]

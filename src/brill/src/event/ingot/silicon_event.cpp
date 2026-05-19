@@ -9,9 +9,9 @@ void SetupInput(TTree *tree, SiliconEvent &event, const std::string &prefix) {
 }
 
 void SetupOutput(TTree *tree, SiliconEvent &event) {
-	tree->Branch("valid", &event.valid, "valid/O");
-	tree->Branch("time", &event.time, "time/D");
-	tree->Branch("energy", &event.energy, "energy/I");
+	tree->Branch("valid", &event.valid, "v/O");
+	tree->Branch("time", &event.time, "t/D");
+	tree->Branch("energy", &event.energy, "e/I");
 }
 
 }

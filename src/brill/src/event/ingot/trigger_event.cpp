@@ -11,8 +11,8 @@ void SetupInput(TTree *tree, TriggerEvent &event, const std::string &prefix) {
 
 void SetupOutput(TTree *tree, TriggerEvent &event) {
 	tree->Branch("flag", &event.flag, "flag/I");
-	tree->Branch("valid", event.valid, "valid[6]/O");
-	tree->Branch("time", event.time, "time[6]/D");
+	tree->Branch("valid", event.valid, "v[6]/O");
+	tree->Branch("time", event.time, "t[6]/D");
 	tree->Branch("external_time", event.external_time, "ets[6]/L");
 }
 

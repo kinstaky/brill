@@ -10,7 +10,7 @@ void SetupInput(TTree *tree, BeamEvent &event, const std::string &prefix) {
 
 void SetupOutput(TTree *tree, BeamEvent &event) {
 	tree->Branch("flag", &event.flag, "flag/I");
-	tree->Branch("valid", &event.valid, "valid/O");
+	tree->Branch("valid", &event.valid, "v/O");
 	tree->Branch("tof", &event.tof, "tof/D");
 }
 

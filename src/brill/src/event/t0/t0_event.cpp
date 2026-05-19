@@ -18,12 +18,12 @@ void SetupInput(TTree *tree, T0Event &event, const std::string &prefix) {
 
 void SetupOutput(TTree *tree, T0Event &event) {
 	tree->Branch("num", &event.num, "num/I");
-	tree->Branch("layer", event.layer, "layer[num]/I");
+	tree->Branch("layer", event.layer, "l[num]/I");
 	tree->Branch("flag", event.flag, "flag[num]/I");
-	tree->Branch("charge", event.charge, "charge[num]/I");
-	tree->Branch("mass", event.mass, "mass[num]/I");
-	tree->Branch("energy", event.energy, "energy[num][6]/D");
-	tree->Branch("time", event.time, "time[num][6]/D");
+	tree->Branch("charge", event.charge, "Z[num]/I");
+	tree->Branch("mass", event.mass, "A[num]/I");
+	tree->Branch("energy", event.energy, "e[num][6]/D");
+	tree->Branch("time", event.time, "t[num][6]/D");
 	tree->Branch("x", event.x, "x[num][4]/D");
 	tree->Branch("y", event.y, "y[num][4]/D");
 	tree->Branch("z", event.z, "z[num][4]/D");
