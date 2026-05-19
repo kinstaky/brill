@@ -21,10 +21,10 @@ void SetupInput(TTree *tree, ParticleEvent &event, const std::string &prefix) {
 void SetupOutput(TTree *tree, const ParticleEvent &event) {
 	ParticleEvent &output = const_cast<ParticleEvent&>(event);
 	tree->Branch("num", &output.num, "num/I");
-	tree->Branch("charge", output.charge, "charge[num]/I");
-	tree->Branch("mass", output.mass, "mass[num]/I");
-	tree->Branch("energy", output.energy, "energy[num]/D");
-	tree->Branch("time", output.time, "time[num]/D");
+	tree->Branch("charge", output.charge, "Z[num]/I");
+	tree->Branch("mass", output.mass, "A[num]/I");
+	tree->Branch("energy", output.energy, "e[num]/D");
+	tree->Branch("time", output.time, "t[num]/D");
 	tree->Branch("x", output.x, "x[num]/D");
 	tree->Branch("y", output.y, "y[num]/D");
 	tree->Branch("z", output.z, "z[num]/D");

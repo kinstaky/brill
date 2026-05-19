@@ -212,10 +212,8 @@ int main(int argc, char **argv) {
 		run
 	).Data();
 	const std::string calibration_path = TString::Format(
-		"%s/t0_%s%04d.txt",
-		brill::JoinPath(config.workspace, config.paths.calibration).c_str(),
-		trigger_infix.c_str(),
-		run
+		"%s/t0.txt",
+		brill::JoinPath(config.workspace, config.paths.calibration).c_str()
 	).Data();
 	const std::string output_path = TString::Format(
 		"%s/t0_%s%04d.root",
