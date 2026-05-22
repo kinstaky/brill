@@ -393,6 +393,15 @@ int main(int argc, char **argv) {
 		FitSlice(slice);
 	}
 
+	slices[0].default_a = 0.1128;
+	slices[0].default_b = -0.0738;
+	slices[1].default_a = 0.4656;
+	slices[1].default_b = -0.0513;
+	slices[2].default_a = 0.7022;
+	slices[2].default_b = -0.0491;
+	slices[3].default_a = 0.9458;
+	slices[3].default_b = -0.0429;
+
 	last_percentage = -1;
 	std::printf("Filling T0 straight PID   0%%");
 	std::fflush(stdout);

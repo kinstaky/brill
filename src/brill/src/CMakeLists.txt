@@ -3,23 +3,5 @@ add_subdirectory(energy_calculator)
 add_subdirectory(rebuild)
 add_subdirectory(t0)
 
-add_library(
-	estimate_support
-	config.cpp
-)
-target_include_directories(
-	estimate_support
-	PUBLIC
-	${PROJECT_SOURCE_DIR}
-	${ROOT_INCLUDE_DIRS}
-)
-target_link_libraries(
-	estimate_support
-	PUBLIC
-	t0_dssd
-	dssd_event
-	ROOT::Core
-	ROOT::RIO
-	ROOT::Tree
-	ROOT::Hist
-)
+add_library(config config.cpp)
+target_include_directories(config PUBLIC ${PROJECT_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})

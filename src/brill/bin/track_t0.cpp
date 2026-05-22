@@ -353,6 +353,14 @@ void BuildChains(const std::vector<Slice> *slices, std::vector<Chain> &chains) {
 	for (size_t i = 0; i < slices[0].size(); ++i) {
 		BuildChainsFromSlice(slices, 0, int(i), empty, chains);
 	}
+	// std::cout << "Built chain.\n";
+	// for (const auto chain : chains) {
+	// 	std::cout << "  charge " << chain.charge << ", mass " << chain.mass
+	// 		<< ", layer " << chain.layer << ", slices " << chain.used_slices
+	// 		<< ", mask " << chain.mask << ", d1 " << chain.d1
+	// 		<< ", d2 " << chain.d2 << ", d3 " << chain.d3
+	// 		<< ", d4 " << chain.d4 << ", has_s " << chain.has_s << "\n";
+	// }
 }
 
 void SelectBestSubset(
@@ -661,6 +669,9 @@ int main(int argc, char **argv) {
 	long long last_percentage = -1;
 	std::printf("Tracking T0   0%%");
 	std::fflush(stdout);
+	// long long fix = 135609;
+	// long long fix = 509;
+	// for (long long entry = fix; entry < fix+1; ++entry) {
 	for (long long entry = 0; entry < total; ++entry) {
 		long long percentage = total > 0 ? entry * 100ll / total : 100ll;
 		if (percentage > last_percentage) {
@@ -834,6 +845,15 @@ int main(int argc, char **argv) {
 			particles[candidate.particle].d1 = candidate.d1;
 			used_d1[candidate.d1] = true;
 		}
+
+		// std::cout <<"Selected:\n";
+		// for (const auto chain : particles) {
+		// 	std::cout << "  charge " << chain.charge << ", mass " << chain.mass
+		// 		<< ", layer " << chain.layer << ", slices " << chain.used_slices
+		// 		<< ", mask " << chain.mask << ", d1 " << chain.d1
+		// 		<< ", d2 " << chain.d2 << ", d3 " << chain.d3
+		// 		<< ", d4 " << chain.d4 << ", has_s " << chain.has_s << "\n";
+		// }
 
 		for (const auto &particle : particles) {
 			FillParticle(particle, d1_event, d2_event, d3_event, d4_event, s_event, output_event);

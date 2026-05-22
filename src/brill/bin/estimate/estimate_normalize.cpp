@@ -76,6 +76,12 @@ int main(int argc, char **argv) {
 			"run"
 		)
 		(
+			"t,trigger",
+			"Trigger type.",
+			cxxopts::value<std::string>(),
+			"trigger"
+		)
+		(
 			"detector",
 			"Detectors to estimate.",
 			cxxopts::value<std::vector<std::string>>(),
@@ -116,6 +122,9 @@ int main(int argc, char **argv) {
 	if (brill::IsJumpRun(config, run)) {
 		std::cout << "Skipping jump run " << run << ".\n";
 		return 0;
+	}
+	if (result.count("trigger")) {
+		config.trigger = result["trigger"].as<std::string>();
 	}
 
 	for (const std::string &detector_name : detectors) {
@@ -166,7 +175,16 @@ int main(int argc, char **argv) {
 		SetupOutput(&opt, normalized_event);
 		TH1F hist("hde", "normalized front-back energy difference", 1000, -5000, 5000);
 
-		for (long long entry = 0; entry < input_tree->GetEntriesFast(); ++entry) {
+		printf("Estimating %s   0%%", detector_name.c_str());
+		fflush(stdout);
+		long long total = input_tree->GetEntries();
+		long long last_percentage = 0;
+		for (long long entry = 0; entry < total; ++entry) {
+			if (entry * 100ll / total > last_percentage) {
+				last_percentage = entry * 100ll / total;
+				printf("\b\b\b\b%3lld%%", last_percentage);
+				fflush(stdout);
+			}
 			input_tree->GetEntry(entry);
 			brill::ApplyDssdNormalize(raw_event, parameters, normalized_event);
 			RemoveAdjacentStrips(normalized_event);
@@ -180,6 +198,7 @@ int main(int argc, char **argv) {
 			}
 			opt.Fill();
 		}
+		printf("\b\b\b\b100%%\n");
 
 		output_file.cd();
 		hist.Write();

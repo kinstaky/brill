@@ -57,8 +57,8 @@ void FillSiliconPid(
 	TH2F &histogram
 ) {
 	if (!silicon.valid) return;
-	for (int i = 0; i < dssd.num; ++i) {
-		histogram.Fill(silicon.energy, dssd.energy[i]);
+	if (dssd.num == 1) {
+		histogram.Fill(silicon.energy, dssd.energy[0]);
 	}
 }
 

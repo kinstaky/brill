@@ -1,12 +1,14 @@
 workspace = "/data/disk1/delta"
-trigger = "t1"
-jump_run = [112]
+trigger = "main"
+#trigger = "main"
+jump_run = [112, 1096, 1099]
 assets = "assets"
 
 [paths]
 ore = "ore"
 grit = "grit"
 ingot = "ingot"
+#ingot = "forge"
 normalize = "normalize"
 match = "match"
 telescope = "track"
@@ -34,7 +36,7 @@ size_y_mm = 64.0
 center_x_mm = 0.0
 center_y_mm = 0.0
 z_mm = 100.0
-match_tolerance = 500.0
+match_tolerance = 400.0
 
 [detectors.t0d2]
 type = "dssd"
@@ -46,7 +48,7 @@ size_y_mm = 64.0
 center_x_mm = 0.0
 center_y_mm = 0.0
 z_mm = 111.76
-match_tolerance = 400.0
+match_tolerance = 500.0
 
 [detectors.t0d3]
 type = "dssd"
@@ -58,7 +60,7 @@ size_y_mm = 64.0
 center_x_mm = 0.0
 center_y_mm = 0.0
 z_mm = 123.52
-match_tolerance = 300.0
+match_tolerance = 400.0
 
 [detectors.t0d4]
 type = "dssd"
@@ -70,7 +72,7 @@ size_y_mm = 64.0
 center_x_mm = 0.0
 center_y_mm = 0.0
 z_mm = 135.28
-match_tolerance = 200.0
+match_tolerance = 1000.0
 
 [detectors.t0s]
 type = "ssd"
