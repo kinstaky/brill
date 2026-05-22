@@ -23,6 +23,22 @@ struct SquareDetectorConfig {
 	double match_tolerance = 1000.0;
 };
 
+struct NromalizeStripsConfig {
+	int norm_side = 0;
+	int ref[2] = {0, 0};
+	int norm[2] = {0, 0};
+	double ref_energy[2] = {0.0, 60000.0};
+	double norm_energy[2] = {0.0, 60000.0};
+};
+
+struct NormalizeDetectorConfig {
+	std::vector<NromalizeStripsConfig> strips;
+};
+
+struct NormalizeConfig {
+	std::map<std::string, NormalizeDetectorConfig> detectors;
+};
+
 struct TrackWindowConfig {
 	double min = -4.0;
 	double max = 4.0;
@@ -84,6 +100,7 @@ struct AppConfig {
 	std::vector<int> jump_run;
 	AppPaths paths;
 	T0Config t0;
+	NormalizeConfig normalize;
 	TrackConfig track;
 	IdentifyConfig identify;
 	PpacConfig ppac;

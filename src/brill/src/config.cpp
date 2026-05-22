@@ -48,6 +48,58 @@ void LoadPaths(const toml::table &table, AppPaths &paths) {
 	LoadPath(table, "energy_calculator", paths.energy_calculator);
 }
 
+template<typename T>
+void LoadNormalizeStripWindow(
+	const toml::table &table,
+	const char *key,
+	T *fill
+) {
+	const auto *range = table[key].as_array();
+	if (!range || range->size() != 2) return;
+	std::optional<T> range_start = (*range)[0].template value<T>();
+	std::optional<T> range_end = (*range)[1].template value<T>();
+	if (range_start) fill[0] = *range_start;
+	if (range_end) fill[1] = *range_end;
+}
+
+void LoadNormalizeStrips(
+	const toml::table &table,
+	NromalizeStripsConfig &strip,
+	int &index
+) {
+	LoadDetectorInt(table, "index", index);
+	LoadDetectorInt(table, "norm_side", strip.norm_side);
+	LoadNormalizeStripWindow(table, "ref", strip.ref);
+	LoadNormalizeStripWindow(table, "norm", strip.norm);
+	LoadNormalizeStripWindow(table, "ref_energy", strip.ref_energy);
+	LoadNormalizeStripWindow(table, "norm_energy", strip.norm_energy);
+}
+
+void LoadNormalizeDetector(
+	const toml::table &table,
+	NormalizeDetectorConfig &detector
+) {
+	if (const auto *strips = table["strips"].as_array()) {
+		detector.strips.resize(strips->size());
+		for (size_t i = 0; i < strips->size(); ++i) {
+			const auto *strips_table = (*strips)[i].as_table();
+			if (!strips_table) continue;
+			NromalizeStripsConfig strip_config;
+			int index = -1;
+			LoadNormalizeStrips(*strips_table, strip_config, index);
+			detector.strips[index] = strip_config;
+		}
+	}
+}
+
+void LoadNormalize(const toml::table &table, NormalizeConfig &normalize) {
+	for (const auto &item : table) {
+		if (!item.second.is_table()) continue;
+		NormalizeDetectorConfig detector;
+		LoadNormalizeDetector(*item.second.as_table(), detector);
+		normalize.detectors[std::string(item.first.str())] = detector;
+	}
+}
 void LoadTrackWindow(
 	const toml::table &table,
 	const char *key,
@@ -205,6 +257,9 @@ int LoadConfig(const std::string &path, AppConfig &config) {
 		}
 		if (const auto *t0 = table["t0"].as_table()) {
 			LoadT0(*t0, config.t0);
+		}
+		if (const auto *normalize = table["normalize"].as_table()) {
+			LoadNormalize(*normalize, config.normalize);
 		}
 		if (const auto *track = table["track"].as_table()) {
 			LoadTrack(*track, config.track);
