@@ -1,6 +1,7 @@
 #include "include/config.h"
 
 #include <iostream>
+#include <algorithm>
 
 #include "external/toml.hpp"
 
@@ -93,12 +94,30 @@ void LoadNormalizeDetector(
 }
 
 void LoadNormalize(const toml::table &table, NormalizeConfig &normalize) {
+	if (const auto *run_array = table["run"].as_array()) {
+		for (const auto &run_item : *run_array) {
+			const auto &run_table = *run_item.as_table();
+			int start_run = 0;
+			int use_run = 0;
+			LoadDetectorInt(run_table, "run", start_run);
+			LoadDetectorInt(run_table, "use", use_run);
+			normalize.runs.push_back(std::make_pair(start_run, use_run));
+		}
+	}
 	for (const auto &item : table) {
 		if (!item.second.is_table()) continue;
 		NormalizeDetectorConfig detector;
 		LoadNormalizeDetector(*item.second.as_table(), detector);
 		normalize.detectors[std::string(item.first.str())] = detector;
 	}
+
+	std::sort(
+		normalize.runs.begin(),
+		normalize.runs.end(),
+		[](const std::pair<int, int>& a, const std::pair<int, int> &b) {
+			return a.first < b.first;
+		}
+	);
 }
 void LoadTrackWindow(
 	const toml::table &table,

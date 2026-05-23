@@ -36,6 +36,7 @@ struct NormalizeDetectorConfig {
 };
 
 struct NormalizeConfig {
+	std::vector<std::pair<int, int>> runs;
 	std::map<std::string, NormalizeDetectorConfig> detectors;
 };
 

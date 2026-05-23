@@ -75,6 +75,12 @@ int main(int argc, char **argv) {
 			cxxopts::value<int>(),
 			"run"
 		)
+		// (
+		// 	"e,end-run",
+		// 	"End run number.",
+		// 	cxxopts::value<int>(),
+		// 	"run"
+		// )
 		(
 			"t,trigger",
 			"Trigger type.",
@@ -119,12 +125,22 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 	const int run = result["run"].as<int>();
+	// const int end_run = result["end-run"].as<int>();
+	// if (end_run < run) {
+	// 	std::cout << "Error: end_run " << end_run << " should larger than run " << run << ".\n";
+	// 	PrintUsage(options);
+	// 	return 0;
+	// }
 	if (brill::IsJumpRun(config, run)) {
 		std::cout << "Skipping jump run " << run << ".\n";
 		return 0;
 	}
 	if (result.count("trigger")) {
 		config.trigger = result["trigger"].as<std::string>();
+	}
+	int normalize_file_run = 0;
+	for (const auto &[start, use] : config.normalize.runs) {
+		if (run >= start) normalize_file_run = use;
 	}
 
 	for (const std::string &detector_name : detectors) {
@@ -140,9 +156,21 @@ int main(int argc, char **argv) {
 		parameters.back_strips = detector->back_strips;
 
 		std::string normalize_dir = brill::JoinPath(config.workspace, config.paths.normalize);
-		std::string front_path = brill::JoinPath(normalize_dir, detector_name + "_front.txt");
-		std::string back_path = brill::JoinPath(normalize_dir, detector_name + "_back.txt");
-		if (brill::ReadDssdNormalizeParameters(front_path, back_path, parameters)) {
+		TString front_path = TString::Format(
+			"%s/%s_front_%04d.txt",
+			normalize_dir.c_str(),
+			detector_name.c_str(),
+			normalize_file_run
+		);
+		TString back_path = TString::Format(
+			"%s/%s_back_%04d.txt",
+			normalize_dir.c_str(),
+			detector_name.c_str(),
+			normalize_file_run
+		);
+		if (brill::ReadDssdNormalizeParameters(
+			front_path.Data(), back_path.Data(), parameters
+		)) {
 			return 1;
 		}
 

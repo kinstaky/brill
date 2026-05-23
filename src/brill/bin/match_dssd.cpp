@@ -78,6 +78,10 @@ int main(int argc, char **argv) {
 		std::cout << "Skipping jump run " << run << ".\n";
 		return 0;
 	}
+	int normalize_file_run = 0;
+	for (const auto &[start, use] : config.normalize.runs) {
+		if (run >= start) normalize_file_run = use;
+	}
 
 	for (const std::string &detector_name : detectors) {
 		const brill::SquareDetectorConfig *detector =
@@ -97,9 +101,21 @@ int main(int argc, char **argv) {
 		parameters.front_strips = detector->front_strips;
 		parameters.back_strips = detector->back_strips;
 		std::string normalize_dir = brill::JoinPath(config.workspace, config.paths.normalize);
-		std::string front_path = brill::JoinPath(normalize_dir, detector_name + "_front.txt");
-		std::string back_path = brill::JoinPath(normalize_dir, detector_name + "_back.txt");
-		if (brill::ReadDssdNormalizeParameters(front_path, back_path, parameters)) {
+		TString front_path = TString::Format(
+			"%s/%s_front_%04d.root",
+			normalize_dir.c_str(),
+			detector_name.c_str(),
+			normalize_file_run
+		);		
+		TString back_path = TString::Format(
+			"%s/%s_back_%04d.root",
+			normalize_dir.c_str(),
+			detector_name.c_str(),
+			normalize_file_run
+		);		
+		if (brill::ReadDssdNormalizeParameters(
+			front_path.Data(), back_path.Data(), parameters
+		)) {
 			return 1;
 		}
 

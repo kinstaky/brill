@@ -28,13 +28,13 @@ inline double NormEnergy(
 	if (side == 0) {
 		return
 			parameters.front_p0[strip]
-			+ parameters.front_p1[strip] * raw_energy
-			+ parameters.front_p2[strip] * raw_energy * raw_energy;
+			+ parameters.front_p1[strip] * raw_energy;
+//			+ parameters.front_p2[strip] * raw_energy * raw_energy;
 	}
 	return
 		parameters.back_p0[strip]
-		+ parameters.back_p1[strip] * raw_energy
-		+ parameters.back_p2[strip] * raw_energy * raw_energy;
+		+ parameters.back_p1[strip] * raw_energy;
+		//+ parameters.back_p2[strip] * raw_energy * raw_energy;
 }
 
 int NormalizeStrips(
@@ -47,11 +47,7 @@ int NormalizeStrips(
 	const int &side = config.norm_side;
 	const int offset = side * parameters.front_strips;
 	// energy graph fe:be or be:fe
-	TGraph *ge = new TGraph[
-		config.norm_side == 0
-			? parameters.front_strips
-			: parameters.back_strips
-	];
+	TGraph ge[128];
 
 	// total number of entries
 	long long total = chain.GetEntries();
@@ -59,7 +55,7 @@ int NormalizeStrips(
 	long long last_percentage = 0;
 	// show start
 	printf(
-		"Filling for side %d [%d, %d) reference strips [%d, %d)   0%%",
+		"Filling for side %d [%d, %d] reference strips [%d, %d]   0%%",
 		config.norm_side, config.norm[0], config.norm[1], config.ref[0], config.ref[1]
 	);
 	fflush(stdout);
@@ -90,7 +86,7 @@ int NormalizeStrips(
 			if (be < config.ref_energy[0] || be > config.ref_energy[1]) continue;
 			if (fe < config.norm_energy[0] || fe > config.norm_energy[1]) continue;
 			// fill to graph
-			ge[fs].AddPoint(fe, NormEnergy(parameters, 1, bs , be));
+			ge[fs].AddPoint(fe, NormEnergy(parameters, 1, bs, be));
 		} else {
 			// jump if not reference strips
 			if (fs < config.ref[0]|| fs > config.ref[1]) continue;
@@ -101,6 +97,11 @@ int NormalizeStrips(
 			// jump if energy out of range
 			if (fe < config.ref_energy[0] || fe > config.ref_energy[1]) continue;
 			if (be < config.norm_energy[0] || be > config.norm_energy[1]) continue;
+	/*std::cout << config.ref[0] << ", " << config.ref[1] << ", "
+		<< config.norm[0] << ", " << config.norm[1] << ", "
+		<< config.ref_energy[0] << ", " << config.ref_energy[1] << ", "
+		<< config.norm_energy[0] << ", " << config.norm_energy[1] << ", "
+		<< fe << ", " << be << ", " << fs << ", " << bs << "\n";*/
 			// fill to graph
 			ge[bs].AddPoint(be, NormEnergy(parameters, 0, fs, fe));
 		}
@@ -115,22 +116,23 @@ int NormalizeStrips(
 		// only fits when over 10 points
 		if (ge[i].GetN() > 5) {
 			// fitting function
-			TF1 energy_fit("efit", "pol2", 0, 60000);
+			TF1 energy_fit("efit", "pol1", 0, 60000);
 			// set initial value
 			energy_fit.SetParameter(0, 0.0);
 			energy_fit.SetParameter(1, 1.0);
-			energy_fit.SetParameter(2, 0.0);
+			//energy_fit.SetParLimits(2, -1e-6, 1e-6);
+			//energy_fit.SetParameter(2, 0.0);
 			// fit
 			ge[i].Fit(&energy_fit, "QR+ ROB=0.8");
 			// store the normalized parameters
 			if (config.norm_side == 0) {
 				parameters.front_p0[i] = energy_fit.GetParameter(0);
 				parameters.front_p1[i] = energy_fit.GetParameter(1);
-				parameters.front_p2[i] = energy_fit.GetParameter(2);
+				//parameters.front_p2[i] = energy_fit.GetParameter(2);
 			} else {
 				parameters.back_p0[i] = energy_fit.GetParameter(0);
 				parameters.back_p1[i] = energy_fit.GetParameter(1);
-				parameters.back_p2[i] = energy_fit.GetParameter(2);
+				//parameters.back_p2[i] = energy_fit.GetParameter(2);
 			}
 		}
 		// store the graph
@@ -154,11 +156,7 @@ int NormalizeStrips(
 	}
 
 	// residual
-	TGraph *res = new TGraph[
-		config.norm_side == 0
-			? parameters.front_strips
-			: parameters.back_strips
-	];
+	TGraph res[128];
 	for (int i = config.norm[0]; i < config.norm[1]; ++i) {
 		if (has_normalized[offset+i]) continue;
 		int point = ge[i].GetN();
@@ -182,7 +180,6 @@ int main(int argc, char **argv) {
 		("h,help", "Print help information.")
 		("r,run", "Run number.", cxxopts::value<int>(), "run")
 		("e,end-run", "End run number.", cxxopts::value<int>(), "run")
-		("w,window", "Override matching tolerance.", cxxopts::value<double>(), "window")
 		("t,trigger", "Trigger type.", cxxopts::value<std::string>(), "trigger")
 		(
 			"c,config",
@@ -265,17 +262,28 @@ int main(int argc, char **argv) {
 		brill::DssdNormalizeParameters parameters;
 		parameters.front_strips = detector->front_strips;
 		parameters.back_strips = detector->back_strips;
-		std::string normalize_dir = brill::JoinPath(config.workspace, config.paths.normalize);
+		for (int i = 0; i < parameters.front_strips; ++i) {
+			parameters.front_p0[i] = 0.0;
+			parameters.front_p1[i] = 1.0;
+			parameters.front_p2[i] = 0.0;
+		}
+		for (int i = 0; i < parameters.back_strips; ++i) {
+			parameters.back_p0[i] = 0.0;
+			parameters.back_p1[i] = 1.0;
+			parameters.back_p2[i] = 0.0;
+		}
 
 		brill::DssdEvent raw_event;
 		brill::SetupInput(&chain, raw_event);
 
+		std::string normalize_dir = brill::JoinPath(config.workspace, config.paths.normalize);
 		TString output_path = TString::Format(
-			"%s/%s_%s%04d.root",
-			brill::JoinPath(config.workspace, config.paths.match).c_str(),
+			"%s/%s_%s%04d_%04d.root",
+			normalize_dir.c_str(),
 			detector_name.c_str(),
 			brill::TriggerInfix(config.trigger).c_str(),
-			run
+			run,
+			end_run
 		);
 		TFile opf(output_path, "recreate");
 
@@ -291,10 +299,20 @@ int main(int argc, char **argv) {
 			NormalizeStrips(strips, chain, raw_event, parameters, has_normalized);
 		}
 
-		std::string front_path = brill::JoinPath(normalize_dir, detector_name + "_front.txt");
-		std::string back_path = brill::JoinPath(normalize_dir, detector_name + "_back.txt");
+		TString front_path = TString::Format(
+			"%s/%s_front_%04d.txt",
+			normalize_dir.c_str(),
+			detector_name.c_str(),
+			run
+		);
+		TString back_path = TString::Format(
+			"%s/%s_back_%04d.txt",
+			normalize_dir.c_str(),
+			detector_name.c_str(),
+			run
+		);
 		if (brill::WriteDssdNormalizeParameters(
-			front_path, back_path, parameters
+			front_path.Data(), back_path.Data(), parameters
 		)) {
 			std::cerr << "Error: Write normalize parameters failed.\n";
 			return 1;

@@ -12,10 +12,10 @@ struct DssdNormalizeParameters {
 	int front_strips = 0;
 	int back_strips = 0;
 	double front_p0[kMaxStrips] = {0.0};
-	double front_p1[kMaxStrips] = {0.0};
+	double front_p1[kMaxStrips] = {1.0};
 	double front_p2[kMaxStrips] = {0.0};
 	double back_p0[kMaxStrips] = {0.0};
-	double back_p1[kMaxStrips] = {0.0};
+	double back_p1[kMaxStrips] = {1.0};
 	double back_p2[kMaxStrips] = {0.0};
 };
 
