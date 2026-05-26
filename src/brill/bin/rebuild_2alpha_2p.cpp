@@ -22,6 +22,7 @@
 #include "include/energy_calculator/lost_energy_calculator.h"
 #include "include/event/t0/dssd_match_event.h"
 #include "include/rebuild/nuclear_data.h"
+#include "include/rebuild/particle.h"
 #include "include/utils.h"
 
 namespace {
@@ -681,6 +682,7 @@ int main(int argc, char **argv) {
 	double px[kParticleCount] = {0.0, 0.0, 0.0, 0.0};
 	double py[kParticleCount] = {0.0, 0.0, 0.0, 0.0};
 	double pz[kParticleCount] = {0.0, 0.0, 0.0, 0.0};
+	double excitation = 0.0;
 	int orig_run = 0;
 	long long orig_entry = -1;
 	opt.Branch("charge", charge, "Z[4]/I");
@@ -692,6 +694,7 @@ int main(int argc, char **argv) {
 	opt.Branch("px", px, "px[4]/D");
 	opt.Branch("py", py, "py[4]/D");
 	opt.Branch("pz", pz, "pz[4]/D");
+	opt.Branch("ex", &excitation, "ex/D");
 	opt.Branch("run", &orig_run, "run/I");
 	opt.Branch("entry", &orig_entry, "entry/L");
 
@@ -729,6 +732,7 @@ int main(int argc, char **argv) {
 		std::fill_n(px, kParticleCount, 0.0);
 		std::fill_n(py, kParticleCount, 0.0);
 		std::fill_n(pz, kParticleCount, 0.0);
+		excitation = 0.0;
 
 		long long local_entry = chain2.LoadTree(entry);
 		if (local_entry < 0) continue;
@@ -777,6 +781,37 @@ int main(int argc, char **argv) {
 			pz[i] = rebuild.direction.Z();
 		}
 		if (!valid) continue;
+
+		brill::Particle fragments[kParticleCount] = {
+			brill::Particle(
+				charge[0],
+				mass[0],
+				kinetic[0],
+				ROOT::Math::XYZVector(px[0], py[0], pz[0])
+			),
+			brill::Particle(
+				charge[1],
+				mass[1],
+				kinetic[1],
+				ROOT::Math::XYZVector(px[1], py[1], pz[1])
+			),
+			brill::Particle(
+				charge[2],
+				mass[2],
+				kinetic[2],
+				ROOT::Math::XYZVector(px[2], py[2], pz[2])
+			),
+			brill::Particle(
+				charge[3],
+				mass[3],
+				kinetic[3],
+				ROOT::Math::XYZVector(px[3], py[3], pz[3])
+			)
+		};
+		brill::Particle carbon10 = fragments[0] + fragments[1];
+		carbon10 = carbon10 + fragments[2];
+		carbon10 = carbon10 + fragments[3];
+		excitation = carbon10.ExcitationEnergy();
 
 		int tree_number = chain2.GetTreeNumber();
 		if (tree_number < 0 || size_t(tree_number) >= source_runs.size()) continue;
