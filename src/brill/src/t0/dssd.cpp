@@ -89,15 +89,17 @@ int WriteOneSide(
 	return 0;
 }
 
-void SortHits(int &num, int *strip, double *energy, double *time) {
-	std::vector<Hit> hits;
-	hits.reserve(num);
+void SortHits(const int num, int *strip, double *energy, double *time) {
+	if (num <= 0 || num > 8) return;
+	Hit hits[16];
 	for (int i = 0; i < num; ++i) {
-		hits.push_back(Hit{strip[i], energy[i], time[i]});
+		hits[i].strip = strip[i];
+		hits[i].energy = energy[i];
+		hits[i].time = time[i];
 	}
 	std::sort(
-		hits.begin(),
-		hits.end(),
+		hits,
+		hits+num,
 		[](const Hit &left, const Hit &right) {
 			return left.energy > right.energy;
 		}
@@ -153,7 +155,7 @@ double WeightedStrip(int strip0, double energy0, int strip1, double energy1) {
 }
 
 void FillPhysicalPosition(
-	const SquareDetectorConfig &detector,
+	const SiliconDetectorConfig &detector,
 	double front_strip,
 	double back_strip,
 	double &x,
@@ -192,7 +194,7 @@ void FillPhysicalPosition(
 
 void AppendMatch(
 	DssdMatchEvent &output,
-	const SquareDetectorConfig &detector,
+	const SiliconDetectorConfig &detector,
 	const MatchCandidate &candidate
 ) {
 	if (output.num >= 8) return;
@@ -301,7 +303,7 @@ void ApplyDssdNormalize(
 
 void MatchDssdEvent(
 	const DssdEvent &input,
-	const SquareDetectorConfig &detector,
+	const SiliconDetectorConfig &detector,
 	DssdMatchEvent &output
 ) {
 	Reset(output);

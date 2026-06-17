@@ -47,7 +47,7 @@ void ApplyDssdNormalize(
 
 void MatchDssdEvent(
 	const DssdEvent &input,
-	const SquareDetectorConfig &detector,
+	const SiliconDetectorConfig &detector,
 	DssdMatchEvent &output
 );
 

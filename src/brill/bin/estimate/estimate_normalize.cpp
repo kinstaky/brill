@@ -144,7 +144,7 @@ int main(int argc, char **argv) {
 	}
 
 	for (const std::string &detector_name : detectors) {
-		const brill::SquareDetectorConfig *detector =
+		const brill::SiliconDetectorConfig *detector =
 			brill::FindDetectorConfig(config, detector_name);
 		if (!detector) {
 			std::cerr << "Error: Detector " << detector_name << " is not found in config.\n";
@@ -214,7 +214,16 @@ int main(int argc, char **argv) {
 				fflush(stdout);
 			}
 			input_tree->GetEntry(entry);
+			if (detector->use_integral) {
+				for (int i = 0; i < raw_event.front_num; ++i) {
+					raw_event.front_energy[i] = raw_event.front_integral[i];
+				}
+				for (int i = 0; i < raw_event.back_num; ++i) {
+					raw_event.back_energy[i] = raw_event.back_integral[i];
+				}
+			}
 			brill::ApplyDssdNormalize(raw_event, parameters, normalized_event);
+			opt.Fill();
 			RemoveAdjacentStrips(normalized_event);
 			for (
 				int i = 0;
@@ -224,7 +233,6 @@ int main(int argc, char **argv) {
 				if (normalized_event.front_energy[i] == 0 || normalized_event.back_energy[i] == 0) continue;
 				hist.Fill(normalized_event.front_energy[i] - normalized_event.back_energy[i]);
 			}
-			opt.Fill();
 		}
 		printf("\b\b\b\b100%%\n");
 

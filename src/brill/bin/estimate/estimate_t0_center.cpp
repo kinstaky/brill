@@ -23,14 +23,14 @@ void PrintUsage(const cxxopts::Options &options) {
 	std::cout << options.help() << "\n";
 }
 
-double AxisPitchX(const brill::SquareDetectorConfig &detector) {
+double AxisPitchX(const brill::SiliconDetectorConfig &detector) {
 	if (detector.name == "t0d2") {
 		return detector.size_x_mm / double(detector.back_strips);
 	}
 	return detector.size_x_mm / double(detector.front_strips);
 }
 
-double AxisPitchY(const brill::SquareDetectorConfig &detector) {
+double AxisPitchY(const brill::SiliconDetectorConfig &detector) {
 	if (detector.name == "t0d2") {
 		return detector.size_y_mm / double(detector.front_strips);
 	}
@@ -138,10 +138,10 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	const brill::SquareDetectorConfig *detector1 = brill::FindDetectorConfig(config, "t0d1");
-	const brill::SquareDetectorConfig *detector2 = brill::FindDetectorConfig(config, "t0d2");
-	const brill::SquareDetectorConfig *detector3 = brill::FindDetectorConfig(config, "t0d3");
-	const brill::SquareDetectorConfig *detector4 = brill::FindDetectorConfig(config, "t0d4");
+	const brill::SiliconDetectorConfig *detector1 = brill::FindDetectorConfig(config, "t0d1");
+	const brill::SiliconDetectorConfig *detector2 = brill::FindDetectorConfig(config, "t0d2");
+	const brill::SiliconDetectorConfig *detector3 = brill::FindDetectorConfig(config, "t0d3");
+	const brill::SiliconDetectorConfig *detector4 = brill::FindDetectorConfig(config, "t0d4");
 	if (!detector1 || !detector2 || !detector3 || !detector4) {
 		std::cerr << "Error: Missing T0 detector config.\n";
 		return 1;

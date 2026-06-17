@@ -9,7 +9,7 @@ namespace brill {
 constexpr int kMaxPpac = 3;
 constexpr int kMaxStrips = 128;
 
-struct SquareDetectorConfig {
+struct SiliconDetectorConfig {
 	std::string name;
 	std::string type = "dssd";
 	int front_strips = 32;
@@ -21,6 +21,7 @@ struct SquareDetectorConfig {
 	double center_y_mm = 0.0;
 	double z_mm = 0.0;
 	double match_tolerance = 1000.0;
+	bool use_integral = false;
 };
 
 struct NromalizeStripsConfig {
@@ -105,12 +106,12 @@ struct AppConfig {
 	TrackConfig track;
 	IdentifyConfig identify;
 	PpacConfig ppac;
-	std::map<std::string, SquareDetectorConfig> detectors;
+	std::map<std::string, SiliconDetectorConfig> detectors;
 };
 
 int LoadConfig(const std::string &path, AppConfig &config);
 
-const SquareDetectorConfig *FindDetectorConfig(
+const SiliconDetectorConfig *FindDetectorConfig(
 	const AppConfig &config,
 	const std::string &name
 );

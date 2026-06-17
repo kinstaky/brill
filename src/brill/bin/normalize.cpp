@@ -39,6 +39,7 @@ inline double NormEnergy(
 
 int NormalizeStrips(
 	const brill::NromalizeStripsConfig &config,
+	const bool use_integral,
 	TChain &chain,
 	const brill::DssdEvent &event,
 	brill::DssdNormalizeParameters &parameters,
@@ -72,8 +73,8 @@ int NormalizeStrips(
 
 		const int &fs = event.front_strip[0];
 		const int &bs = event.back_strip[0];
-		const double &fe = event.front_energy[0];
-		const double &be = event.back_energy[0];
+		const double &fe = use_integral ? event.front_integral[0] : event.front_energy[0];
+		const double &be = use_integral ? event.back_integral[0] : event.back_energy[0];
 
 		if (config.norm_side == 0) {
 			// jump if not reference strips
@@ -235,7 +236,7 @@ int main(int argc, char **argv) {
 	}
 
 	for (const std::string &detector_name : detectors) {
-		const brill::SquareDetectorConfig *detector =
+		const brill::SiliconDetectorConfig *detector =
 			brill::FindDetectorConfig(config, detector_name);
 		if (!detector) {
 			std::cerr << "Error: Detector " << detector_name << " is not found in config.\n";
@@ -245,14 +246,14 @@ int main(int argc, char **argv) {
 		TChain chain("tree");
 		int added_runs = 0;
 		for (int current_run = run; current_run <= end_run; ++current_run) {
-			if (brill::IsJumpRun(config, run)) continue;
+			if (brill::IsJumpRun(config, current_run)) continue;
 			++added_runs;
 			chain.Add(TString::Format(
 				"%s/%s_%s%04d.root",
 				brill::JoinPath(config.workspace, config.paths.ingot).c_str(),
 				detector_name.c_str(),
 				brill::TriggerInfix(config.trigger).c_str(),
-				run
+				current_run
 			));
 		}
 		if (added_runs == 0) {
@@ -296,7 +297,7 @@ int main(int argc, char **argv) {
 
 		opf.cd();
 		for (const auto &strips : strips_config) {
-			NormalizeStrips(strips, chain, raw_event, parameters, has_normalized);
+			NormalizeStrips(strips, detector->use_integral, chain, raw_event, parameters, has_normalized);
 		}
 
 		TString front_path = TString::Format(

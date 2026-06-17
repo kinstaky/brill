@@ -176,7 +176,7 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	const brill::SquareDetectorConfig *detectors[kLayerCount] = {
+	const brill::SiliconDetectorConfig *detectors[kLayerCount] = {
 		brill::FindDetectorConfig(config, "t0d1"),
 		brill::FindDetectorConfig(config, "t0d2"),
 		brill::FindDetectorConfig(config, "t0d3"),

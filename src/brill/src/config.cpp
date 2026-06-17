@@ -15,22 +15,13 @@ void LoadPath(const toml::table &table, const char *key, std::string &value) {
 	}
 }
 
-void LoadDetectorDouble(
+template<typename T>
+void LoadValue(
 	const toml::table &table,
 	const char *key,
-	double &value
+	T &value
 ) {
-	if (auto node = table[key].value<double>()) {
-		value = *node;
-	}
-}
-
-void LoadDetectorInt(
-	const toml::table &table,
-	const char *key,
-	int &value
-) {
-	if (auto node = table[key].value<int>()) {
+	if (auto node = table[key].value<T>()) {
 		value = *node;
 	}
 }
@@ -68,8 +59,8 @@ void LoadNormalizeStrips(
 	NromalizeStripsConfig &strip,
 	int &index
 ) {
-	LoadDetectorInt(table, "index", index);
-	LoadDetectorInt(table, "norm_side", strip.norm_side);
+	LoadValue(table, "index", index);
+	LoadValue(table, "norm_side", strip.norm_side);
 	LoadNormalizeStripWindow(table, "ref", strip.ref);
 	LoadNormalizeStripWindow(table, "norm", strip.norm);
 	LoadNormalizeStripWindow(table, "ref_energy", strip.ref_energy);
@@ -99,8 +90,8 @@ void LoadNormalize(const toml::table &table, NormalizeConfig &normalize) {
 			const auto &run_table = *run_item.as_table();
 			int start_run = 0;
 			int use_run = 0;
-			LoadDetectorInt(run_table, "run", start_run);
-			LoadDetectorInt(run_table, "use", use_run);
+			LoadValue(run_table, "run", start_run);
+			LoadValue(run_table, "use", use_run);
 			normalize.runs.push_back(std::make_pair(start_run, use_run));
 		}
 	}
@@ -156,17 +147,17 @@ void LoadStraightParticle(
 	if (auto node = table["particle"].value<std::string>()) {
 		particle.particle = *node;
 	}
-	LoadDetectorDouble(table, "mean", particle.mean);
-	LoadDetectorDouble(table, "sigma", particle.sigma);
-	LoadDetectorDouble(table, "range", particle.range);
+	LoadValue(table, "mean", particle.mean);
+	LoadValue(table, "sigma", particle.sigma);
+	LoadValue(table, "range", particle.range);
 }
 
 void LoadStraightSlice(
 	const toml::table &table,
 	StraightSliceConfig &slice
 ) {
-	LoadDetectorDouble(table, "A", slice.A);
-	LoadDetectorDouble(table, "B", slice.B);
+	LoadValue(table, "A", slice.A);
+	LoadValue(table, "B", slice.B);
 	if (const auto *particles = table["particles"].as_array()) {
 		for (size_t i = 0; i < particles->size(); ++i) {
 			const auto *particle_table = (*particles)[i].as_table();
@@ -229,20 +220,21 @@ void LoadPpac(const toml::table &table, PpacConfig &ppac) {
 	}
 }
 
-void LoadDetector(const toml::table &table, const std::string &name, SquareDetectorConfig &detector) {
+void LoadDetector(const toml::table &table, const std::string &name, SiliconDetectorConfig &detector) {
 	detector.name = name;
 	if (auto node = table["type"].value<std::string>()) {
 		detector.type = *node;
 	}
-	LoadDetectorInt(table, "front_strips", detector.front_strips);
-	LoadDetectorInt(table, "back_strips", detector.back_strips);
-	LoadDetectorDouble(table, "thickness_um", detector.thickness_um);
-	LoadDetectorDouble(table, "size_x_mm", detector.size_x_mm);
-	LoadDetectorDouble(table, "size_y_mm", detector.size_y_mm);
-	LoadDetectorDouble(table, "center_x_mm", detector.center_x_mm);
-	LoadDetectorDouble(table, "center_y_mm", detector.center_y_mm);
-	LoadDetectorDouble(table, "z_mm", detector.z_mm);
-	LoadDetectorDouble(table, "match_tolerance", detector.match_tolerance);
+	LoadValue(table, "front_strips", detector.front_strips);
+	LoadValue(table, "back_strips", detector.back_strips);
+	LoadValue(table, "thickness_um", detector.thickness_um);
+	LoadValue(table, "size_x_mm", detector.size_x_mm);
+	LoadValue(table, "size_y_mm", detector.size_y_mm);
+	LoadValue(table, "center_x_mm", detector.center_x_mm);
+	LoadValue(table, "center_y_mm", detector.center_y_mm);
+	LoadValue(table, "z_mm", detector.z_mm);
+	LoadValue(table, "match_tolerance", detector.match_tolerance);
+	LoadValue(table, "use_integral", detector.use_integral);
 }
 
 } // namespace
@@ -293,7 +285,7 @@ int LoadConfig(const std::string &path, AppConfig &config) {
 			}
 			for (const char *name : {"t0d1", "t0d2", "t0d3", "t0d4", "t0s"}) {
 				if (const auto *detector = (*detectors)[name].as_table()) {
-					SquareDetectorConfig config_detector;
+					SiliconDetectorConfig config_detector;
 					LoadDetector(*detector, name, config_detector);
 					config.detectors[config_detector.name] = config_detector;
 				}
@@ -306,7 +298,7 @@ int LoadConfig(const std::string &path, AppConfig &config) {
 	return 0;
 }
 
-const SquareDetectorConfig *FindDetectorConfig(const AppConfig &config, const std::string &name) {
+const SiliconDetectorConfig *FindDetectorConfig(const AppConfig &config, const std::string &name) {
 	auto iter = config.detectors.find(name);
 	if (iter == config.detectors.end()) return nullptr;
 	return &iter->second;

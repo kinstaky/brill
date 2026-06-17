@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
 	}
 
 	for (const std::string &detector_name : detectors) {
-		const brill::SquareDetectorConfig *detector =
+		const brill::SiliconDetectorConfig *detector =
 			brill::FindDetectorConfig(config, detector_name);
 		if (!detector) {
 			std::cerr << "Error: Detector " << detector_name << " is not found in config.\n";
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 		if (result.count("window")) {
 			match_tolerance = result["window"].as<double>();
 		}
-		brill::SquareDetectorConfig working_detector = *detector;
+		brill::SiliconDetectorConfig working_detector = *detector;
 		working_detector.match_tolerance = match_tolerance;
 
 		brill::DssdNormalizeParameters parameters;
@@ -106,13 +106,13 @@ int main(int argc, char **argv) {
 			normalize_dir.c_str(),
 			detector_name.c_str(),
 			normalize_file_run
-		);		
+		);
 		TString back_path = TString::Format(
 			"%s/%s_back_%04d.txt",
 			normalize_dir.c_str(),
 			detector_name.c_str(),
 			normalize_file_run
-		);		
+		);
 		if (brill::ReadDssdNormalizeParameters(
 			front_path.Data(), back_path.Data(), parameters
 		)) {
