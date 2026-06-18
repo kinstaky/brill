@@ -19,23 +19,23 @@
 #include "include/t0/dssd.h"
 #include "include/utils.h"
 
-inline double NormEnergy(
-	const brill::DssdNormalizeParameters &parameters,
-	const int side,
-	const int strip,
-	const double raw_energy
-) {
-	if (side == 0) {
-		return
-			parameters.front_p0[strip]
-			+ parameters.front_p1[strip] * raw_energy;
-//			+ parameters.front_p2[strip] * raw_energy * raw_energy;
-	}
-	return
-		parameters.back_p0[strip]
-		+ parameters.back_p1[strip] * raw_energy;
-		//+ parameters.back_p2[strip] * raw_energy * raw_energy;
-}
+// inline double NormEnergy(
+// 	const brill::DssdNormalizeParameters &parameters,
+// 	const int side,
+// 	const int strip,
+// 	const double raw_energy
+// ) {
+// 	if (side == 0) {
+// 		return
+// 			parameters.front_p0[strip]
+// 			+ parameters.front_p1[strip] * raw_energy;
+// //			+ parameters.front_p2[strip] * raw_energy * raw_energy;
+// 	}
+// 	return
+// 		parameters.back_p0[strip]
+// 		+ parameters.back_p1[strip] * raw_energy;
+// 		//+ parameters.back_p2[strip] * raw_energy * raw_energy;
+// }
 
 int NormalizeStrips(
 	const brill::NromalizeStripsConfig &config,

@@ -1,18 +1,18 @@
 add_library(
-	t0_dssd
+	brill_t0_dssd
 	dssd.cpp
 )
 target_include_directories(
-	t0_dssd
+	brill_t0_dssd
 	PUBLIC
 	${PROJECT_SOURCE_DIR}
 	${ROOT_INCLUDE_DIRS}
 )
 target_link_libraries(
-	t0_dssd
+	brill_t0_dssd
 	PUBLIC
-	dssd_event
-	dssd_match_event
+	brill_dssd_event
+	brill_dssd_match_event
 	ROOT::Core
 	ROOT::RIO
 	ROOT::Tree

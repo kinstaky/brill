@@ -82,3 +82,6 @@ MESSAGE("  cern ROOT path.......: " ${CMAKE_FIND_ROOT_PATH})
 
 add_subdirectory(src)
 add_subdirectory(bin)
+
+add_library(brill::core ALIAS brill_core)
+add_library(brill::t0 ALIAS brill_t0_dssd)

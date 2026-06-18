@@ -19,13 +19,21 @@ struct DssdNormalizeParameters {
 	double back_p2[kMaxStrips] = {0.0};
 };
 
-// int RunDssdNormalize(
-// 	const AppConfig &config,
-// 	const std::string &detector,
-// 	const std::string &trigger,
-// 	int run,
-// 	int end_run
-// );
+inline double NormEnergy(
+	const brill::DssdNormalizeParameters &parameters,
+	const int side,
+	const int strip,
+	const double raw_energy
+) {
+	if (side == 0) {
+		return
+			parameters.front_p0[strip]
+			+ parameters.front_p1[strip] * raw_energy;
+	}
+	return
+		parameters.back_p0[strip]
+		+ parameters.back_p1[strip] * raw_energy;
+}
 
 int WriteDssdNormalizeParameters(
 	const std::string &front_path,
@@ -50,7 +58,5 @@ void MatchDssdEvent(
 	const SiliconDetectorConfig &detector,
 	DssdMatchEvent &output
 );
-
-// void FillDssdPidHistogram(const DssdMergeEvent &left, const DssdMergeEvent &right, TH2F &hist);
 
 } // namespace brill
